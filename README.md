@@ -1,2 +1,3 @@
-# draft-exam-cram
-Exam Cram, study productivity application
+# Exam Cram
+
+A study productivity application
