@@ -5,9 +5,13 @@ version: "3.9"
 services:
   # Backend service
   backend:
-    # Path to Dockerfile to build the image
+    # Build configurations
     build:
+      # Path to Dockerfile to build the image
       context: ./backend
+      # Run as development environment
+      args:
+        - DEV=true
     # Map local port 8000 to container port 8000
     ports:
       - "8000:8000"

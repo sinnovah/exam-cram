@@ -1,0 +1,5 @@
+# Development dependencies
+# >=n,<n makes sure the latest patches are applied
+
+# Linting tool
+flake8>=3.9.2,<3.10

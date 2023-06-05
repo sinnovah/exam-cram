@@ -7,8 +7,9 @@ LABEL maintainer="sinnovah"
 # Ensure python output is unbuffered to avoid delays
 ENV PYTHONUNBUFFERED 1
 
-# Copy local file & directory to docker image
+# Copy local files & app directory to docker image
 COPY ./requirements.txt /tmp/requirements.txt
+COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./app /app
 
 # Default path to run commands from
@@ -22,18 +23,25 @@ RUN \
     # Create virtual environment
     # Avoids conflicts with base image & project dependencies
     python -m venv /py && \
-    # Upgrade pip to latest version
+    # Upgrade pip to the latest version
     /py/bin/pip install --upgrade pip && \
     # Install dependencies
     /py/bin/pip install -r /tmp/requirements.txt && \
-    # Remove tmp directory because requirements.txt 
-    # is no longer needed. Keeps image light weight
+    # Install development dependencies if in development
+    if [ $DEV = "development" ]; \
+        then /py/bin/pip install -r /tmp/requirements.dev.txt; \
+    fi && \
+    # Remove tmp directory because requirements files
+    # are no longer needed. Keeps image light weight
     rm -rf /tmp && \
     # Add a new user to connect to the backend 
-    # to avoid using the root user perminantly
+    # to avoid using the root user permanently
     adduser \
+        # Connect directly with no password
         --disabled-password \
+        # Don't create a user home directory
         --no-create-home \
+        # Username
         backend-user
 
 # Path for python commands
