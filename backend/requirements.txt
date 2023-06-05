@@ -1,2 +1,3 @@
+# Dependencies, >= & < makes sure the latest patches are applied
 Django>=4.2.1,<4.3
 django_rest_framework>=3.13.0,<3.14
