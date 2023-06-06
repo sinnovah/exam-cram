@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # https://github.com/marketplace/actions/github-project-automation
-      - uses: alex-page/github-project-automation-plus@7ffb872c64bd809d23563a130a0a97d01dfa8f43
+      - uses: alex-page/github-project-automation-plus@v0.8.3
         with:
           project: Exam Cram Enhancements
           # Move the card to the In Progress column
