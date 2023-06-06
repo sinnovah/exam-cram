@@ -2,9 +2,8 @@
 name: Move assigned card
 on:
   issues:
-    # Run the workflow on enhancement issues that have been assigned
+    # Run the workflow on issues that have been assigned
     types:
-      - enhancement
       - assigned
 
 jobs:
