@@ -1,0 +1,9 @@
+# Flake8 linting configuration files start with [flake8]
+[flake8]
+
+# Ignore the following Django files
+exclude =
+    migrations,
+    __pycache__,
+    manage.py,
+    settings.py,

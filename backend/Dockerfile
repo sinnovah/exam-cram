@@ -18,6 +18,9 @@ WORKDIR /app
 # Expose port 8000 to connect to the server
 EXPOSE 8000
 
+# When using docker-compose for dev, this argument is overidden to true
+ARG DEV=false
+
 # Run the following commands on the image
 RUN \
     # Create virtual environment
@@ -27,8 +30,8 @@ RUN \
     /py/bin/pip install --upgrade pip && \
     # Install dependencies
     /py/bin/pip install -r /tmp/requirements.txt && \
-    # Install development dependencies if in development
-    if [ $DEV = "development" ]; \
+    # Install development dependencies if in dev mode
+    if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt; \
     fi && \
     # Remove tmp directory because requirements files
@@ -44,8 +47,8 @@ RUN \
         # Username
         backend-user
 
-# Path for python commands
+# Saves typing /py/bin everytime when running commands
 ENV PATH="/py/bin:$PATH"
 
-# Switch to non-root user
+# Switch to non-root backend user
 USER backend-user
