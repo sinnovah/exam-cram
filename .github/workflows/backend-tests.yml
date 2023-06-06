@@ -9,7 +9,7 @@ on:
     # Exclude the frontend and proxy from triggering the workflow
     paths-ignore:
       - 'frontend/**'
-      - 'proxy/**'
+      - 'reverse-proxy/**'
 
 jobs:
   test-lint:
