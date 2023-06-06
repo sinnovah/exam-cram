@@ -16,5 +16,5 @@ jobs:
         with:
           project: Exam Cram Enhancements
           # Move the card to the In Progress column
-          column: In Progress
+          column: In progress
           repo-token: ${{ secrets.GHPROJECT_TOKEN }}
