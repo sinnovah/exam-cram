@@ -20,7 +20,10 @@ class UserManager(BaseUserManager):
         Creates, saves, and returns user. extra_fields can be used
         to add additional fields to the user model automatically.
         '''
-
+        # Check if email was not provided
+        if not email:
+            # Raise a ValueError exception
+            raise ValueError('User must have an email address')
         # Associate model with manager, normalize the user's email value
         user = self.model(email=self.normalize_email(email), **extra_fields)
         # Password defaults to None which makes an unusable user which
