@@ -50,3 +50,11 @@ class ModelTests(TestCase):
             user = Helpers.create_user(email=input_email)
             # Test that the user's email was normalized successfully
             self.assertEqual(user.email, output_email)
+
+    def test_empty_user_email_raises_error(self):
+        '''Test that creating a user without an email raises a ValueError'''
+
+        # Test that a ValueError exception is raised
+        with self.assertRaises(ValueError):
+            # Create the user with an empty, invalid email
+            Helpers.create_user(email='')
