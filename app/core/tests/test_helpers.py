@@ -6,7 +6,7 @@ Helpers to reuse in tests.
 from django.contrib.auth import get_user_model
 
 
-def create_user(email='user@example.com', password='testpass123'):
+def create_user(email='user@example.com', password='ThirtyHairyHippos896'):
     '''
     Helper function to create users for testing.
     '''

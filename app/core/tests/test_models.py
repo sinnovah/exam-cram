@@ -10,7 +10,7 @@ from core.tests import test_helpers as Helpers
 
 # Default values of create-user helper function
 USER = 'user@example.com'
-PASSWORD = 'testpass123'
+PASSWORD = 'ThirtyHairyHippos896'
 
 
 class ModelTests(TestCase):
