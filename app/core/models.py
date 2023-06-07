@@ -21,8 +21,8 @@ class UserManager(BaseUserManager):
         to add additional fields to the user model automatically.
         '''
 
-        # Associate model with manager
-        user = self.model(email=email, **extra_fields)
+        # Associate model with manager, normalize the user's email value
+        user = self.model(email=self.normalize_email(email), **extra_fields)
         # Password defaults to None which makes an unusable user which
         # is helpful for testing user access (based off default Django model).
         # set_password encrypts the password
