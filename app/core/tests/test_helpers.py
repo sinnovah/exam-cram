@@ -8,8 +8,7 @@ from django.contrib.auth import get_user_model
 
 def create_user(email='user@example.com', password='testpass123'):
     '''
-    Helper function to create user(s). If creating more than one user
-    in the same test, pass in unique_ids for emails to avoid duplicate.
+    Helper function to create users for testing.
     '''
 
     # Create the user
