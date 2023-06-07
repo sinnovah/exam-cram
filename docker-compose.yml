@@ -18,10 +18,11 @@ services:
     # Sync app local directory to container directory
     volumes:
       - ./app:/app
-    # Default command starts the server
+    # Default command waits for DB, migrates then starts the server
     command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
-        # Environment variables
+      sh -c "python manage.py wait_on_database &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     # Environment variables
     environment:
       - DB_HOST=db
