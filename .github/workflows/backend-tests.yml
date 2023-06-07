@@ -17,10 +17,6 @@ jobs:
     # OS to run the job on
     runs-on: ubuntu-20.04 
     steps:
-      # Create and run an .env file with the contents of the secret
-      - name: Create env file
-        run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
       # Authenticate with Docker Hub to bypass the 
       # Github shared rate limit for pulling images
       - name: Login to Docker Hub
