@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core', # App created with: python manage.py startapp core
 ]
 
 MIDDLEWARE = [
