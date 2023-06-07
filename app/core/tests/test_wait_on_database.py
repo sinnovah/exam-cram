@@ -28,8 +28,8 @@ class ManagementCommandsTest(SimpleTestCase):
 
         # Test patched check was called once
         self.assertEqual(patch_check.call_count, 1)
-        # Test patched check was called once with the correct parameters
-        patch_check.assert_called_once_with(database='default')
+        # Test patched check was called with the correct parameters
+        patch_check.assert_called_once_with(databases=['default'])
 
     @patch('time.sleep')  # Patch time.sleep to speed up test
     def test_wait_on_database_django_errors(self, patch_sleep, patch_check):
@@ -41,25 +41,25 @@ class ManagementCommandsTest(SimpleTestCase):
         # Call the command being tested
         call_command('wait_on_database')
 
-        # Test that patched check was called six times
-        self.assertEqual(patch_check.call_count, 6)
+        # Test that patched check was called seven times
+        self.assertEqual(patch_check.call_count, 7)
         # Test patched check was called with the correct parameters
-        patch_check.assert_called_with(database='default')
+        patch_check.assert_called_with(databases=['default'])
 
     @patch('time.sleep')  # Patch time.sleep to speed up test
     def test_wait_on_database_psycopg2_errors(self, patch_sleep, patch_check):
         """Test wait_on_database command when Psycopg2 errors returned."""
 
         # Patched check returns a True value after four Psycopg2 errors
-        patch_check.side_effect = [Psycopg2OperationalError] * 2 + [True]
+        patch_check.side_effect = [Psycopg2OperationalError] * 4 + [True]
 
         # Call the command being tested
         call_command('wait_on_database')
 
-        # Test that patched check was called four times
-        self.assertEqual(patch_check.call_count, 4)
+        # Test that patched check was called five times
+        self.assertEqual(patch_check.call_count, 5)
         # Test patched check was called with the correct parameters
-        patch_check.assert_called_with(database='default')
+        patch_check.assert_called_with(databases=['default'])
 
     @patch('time.sleep')  # Patch time.sleep to speed up test
     def test_wait_on_database_mixed_errors(self, patch_sleep, patch_check):
@@ -72,7 +72,7 @@ class ManagementCommandsTest(SimpleTestCase):
         # Call the command being tested
         call_command('wait_on_database')
 
-        # Test that patched check was called five times
-        self.assertEqual(patch_check.call_count, 5)
+        # Test that patched check was called six times
+        self.assertEqual(patch_check.call_count, 6)
         # Test patched check was called with the correct parameters
-        patch_check.assert_called_with(database='default')
+        patch_check.assert_called_with(databases=['default'])
