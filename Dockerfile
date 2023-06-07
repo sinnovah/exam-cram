@@ -28,6 +28,11 @@ RUN \
     python -m venv /py && \
     # Upgrade pip to the latest version
     /py/bin/pip install --upgrade pip && \
+    # Install postgresql client
+    apk add --update --no-cache postgresql-client && \
+    # Install build dependencies for packages in requirements file
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
     # Install dependencies
     /py/bin/pip install -r /tmp/requirements.txt && \
     # Install development dependencies if in dev mode
@@ -37,6 +42,8 @@ RUN \
     # Remove tmp directory because requirements files
     # are no longer needed. Keeps image light weight
     rm -rf /tmp && \
+    # Remove build dependencies
+    apk del .tmp-build-deps && \
     # Add a new user to connect to the backend 
     # to avoid using the root user permanently
     adduser \
