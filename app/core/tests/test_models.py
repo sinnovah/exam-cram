@@ -27,3 +27,26 @@ class ModelTests(TestCase):
         # Test that the user's password was created successfully
         # check_password checks the hashed password
         self.assertTrue(user.check_password, PASSWORD)
+
+    def test_user_email_normalized(self):
+        '''
+        Test that emails for new users are normalized
+        '''
+
+        # List of input emails and expected normalized output emails
+        # As per email spec:
+        # Everything before the @ symbol should retain case
+        # Everything after the @ symbol should be lowercase
+        sample_emails = [
+            ['test1@EXAMPLE.com', 'test1@example.com'],
+            ['Test2@Example.com', 'Test2@example.com'],
+            ['TEST3@EXAMPLE.COM', 'TEST3@example.com'],
+            ['test4@example.COM', 'test4@example.com'],
+        ]
+
+        # Loop through the sample emails
+        for input_email, output_email in sample_emails:
+            # Create the user
+            user = Helpers.create_user(email=input_email)
+            # Test that the user's email was normalized successfully
+            self.assertEqual(user.email, output_email)
