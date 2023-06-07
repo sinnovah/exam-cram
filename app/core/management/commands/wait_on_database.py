@@ -4,9 +4,9 @@ Django command to pause execution until database is available.
 import time
 
 from django.core.management.base import BaseCommand
+from django.db.utils import OperationalError as DjangoOperationalError
 
 from psycopg2 import OperationalError as Psycopg2OperationalError
-from django.db.utils import OperationalError as DjangoOperationalError
 
 
 class Command (BaseCommand):
@@ -30,7 +30,7 @@ class Command (BaseCommand):
             try:
                 self.check(databases=['default'])
                 database_up = True  # Database is up, set to true
-            # If OperationalError exception is raised
+            # If OperationalError exception is raised (Django or Psycopg2)
             except (Psycopg2OperationalError, DjangoOperationalError):
                 # Print an appropriate message to terminal
                 self.stdout.write('Database unavailable, waiting 1 second...')
