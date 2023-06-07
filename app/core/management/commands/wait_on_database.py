@@ -12,4 +12,6 @@ class Command (BaseCommand):
 
     def handle(self, *args, **options):
         """Handle command stub, custom code follows"""
-        pass # Pass for now, will be implemented later
+
+        # Pass for now, will be implemented later
+        pass
