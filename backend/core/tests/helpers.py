@@ -6,18 +6,18 @@ Helpers to reuse in tests.
 from django.contrib.auth import get_user_model
 
 
-def create_user(email='user@example.com', password='ThirtyHairyHippos896'):
+def create_user(email='user@example.com', password='ThirtyHairyHippos896', **extra_fields):
     '''
     Helper function to create users for testing.
     '''
 
     # Create the user
-    return get_user_model().objects.create_user(email, password)
+    return get_user_model().objects.create_user(email, password, **extra_fields)
 
-def create_superuser(email='superuser@example.com', password='ThirtyHairyHippos896'):
+def create_superuser(email='superuser@example.com', password='ThirtyHairyHippos896', **extra_fields):
     '''
     Helper function to create superusers for testing.
     '''
 
     # Create the superuser
-    return get_user_model().objects.create_superuser(email, password)
+    return get_user_model().objects.create_superuser(email, password, **extra_fields)
