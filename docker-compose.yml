@@ -26,9 +26,10 @@ services:
     # Environment variables
     environment:
       - DB_HOST=db
-      - DB_NAME=${DEV_DB_NAME}
-      - DB_USER=${DEV_DB_USER}
-      - DB_PASS=${DEV_DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - ADMIN_PATH=${ADMIN_PATH}
     # Wait for db service to be ready before starting this service
     depends_on:
       - db
@@ -42,9 +43,9 @@ services:
       - dev-db-data:/var/lib/postgresql/data
     # Environment variables
     environment:
-      - POSTGRES_DB=${DEV_DB_NAME}
-      - POSTGRES_USER=${DEV_DB_USER}
-      - POSTGRES_PASSWORD=${DEV_DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
 
 volumes:
   # Persist dev database data

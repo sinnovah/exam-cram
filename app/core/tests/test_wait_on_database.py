@@ -11,7 +11,7 @@ from django.test import SimpleTestCase
 
 
 @patch('core.management.commands.wait_on_database.Command.check')
-class ManagementCommandsTest(SimpleTestCase):
+class ManagementCommandsTests(SimpleTestCase):
     """
     Test suite for custom management commands.
     Patched check to simulate exceptions in the response.
