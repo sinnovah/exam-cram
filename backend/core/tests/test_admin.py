@@ -26,9 +26,9 @@ class AdminTests(TestCase):
         self.user = create_user(first_name='Test', last_name='User')
 
     def test_list_users(self):
-        '''Test listing users in the admin panel'''
+        """Test listing users page displays in the admin panel."""
 
-        # Get the url for the users list
+        # Get the url for the users list page
         url = reverse('admin:core_user_changelist')
         # Make a GET request to the url with logged in superuser
         response = self.client.get(url)
@@ -39,3 +39,15 @@ class AdminTests(TestCase):
         self.assertContains(response, self.user.first_name)
         self.assertContains(response, self.user.last_name)
         self.assertContains(response, self.user.email)
+
+    def test_update_user(self):
+        """Test updating/edit a user page displays in the admin panel."""
+
+        # Get the url for the edit users page
+        # Pass in the logged in user's id as an argument
+        url = reverse('admin:core_user_change', args=[self.user.id])
+        # Make a GET request to the url with logged in user
+        response = self.client.get(url)
+
+        # Test that the response is 200 OK
+        self.assertEqual(response.status_code, 200)
