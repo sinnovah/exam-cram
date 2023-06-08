@@ -13,3 +13,11 @@ def create_user(email='user@example.com', password='ThirtyHairyHippos896'):
 
     # Create the user
     return get_user_model().objects.create_user(email, password)
+
+def create_superuser(email='superuser@example.com', password='ThirtyHairyHippos896'):
+    '''
+    Helper function to create superusers for testing.
+    '''
+
+    # Create the superuser
+    return get_user_model().objects.create_superuser(email, password)

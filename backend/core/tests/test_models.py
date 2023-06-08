@@ -6,10 +6,11 @@ from django.test import TestCase
 # Allows for a change to the default user model
 from django.contrib.auth import get_user_model
 
-from core.tests.helpers import create_user
+from core.tests.helpers import create_user, create_superuser
 
-# Default values of create-user helper function
+# Default values of create_user and create_superuser helper functions
 USER = 'user@example.com'
+SUPERUSER = 'superuser@example.com'
 PASSWORD = 'ThirtyHairyHippos896'
 
 
@@ -63,8 +64,8 @@ class ModelTests(TestCase):
         '''Test creating a new superuser'''
 
         # Create the superuser
-        user = get_user_model().objects.create_superuser(USER, PASSWORD)
+        superuser = create_superuser()
 
         # Check that the user is a superuser and staff
-        self.assertTrue(user.is_superuser)
-        self.assertTrue(user.is_staff)
+        self.assertTrue(superuser.is_superuser)
+        self.assertTrue(superuser.is_staff)
