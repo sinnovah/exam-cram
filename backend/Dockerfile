@@ -10,7 +10,7 @@ ENV PYTHONUNBUFFERED 1
 # Copy local files & app directory to docker image
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
-COPY ./backend /backend
+COPY . /backend
 
 # Default path to run commands from
 WORKDIR /backend
