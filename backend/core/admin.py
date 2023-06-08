@@ -20,13 +20,16 @@ class CustomUserAdmin(UserAdmin):
     list_display = ['first_name', 'last_name', 'email']
 
     fieldsets = (
-        (None, {'fields': ('first_name', 'last_name', 'email',)}),
+        # Translators _: Custom title of the details section
+        (_('Details'), {'fields': ('first_name', 'last_name', 'email',)}),
         # Translators _: Custom title of the permissions section
         (_('Permissions'),
             {'fields': ('is_active', 'is_staff', 'is_superuser',)}),
         # Translators _: Custom title of the important dates section
         (_('Important dates'), {'fields': ('last_login',)}),
     )
+    # Make last login date read only (uneditable)
+    readonly_fields = ('last_login',)
 
 
 # Register the user model with the custom admin class
