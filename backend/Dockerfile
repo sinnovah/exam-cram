@@ -40,6 +40,7 @@ RUN \
     else \
         cd core; \
         rm -rf tests; \
+        cd ../; \
     fi && \
     # Remove tmp directory because requirements files
     # are no longer needed. Keeps image light weight
