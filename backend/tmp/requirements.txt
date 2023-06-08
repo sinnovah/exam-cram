@@ -1,6 +1,6 @@
 # Dependencies
 # >=n,<n makes sure the latest patches are applied
-Django>=4.2.1,<4.3
+Django>=4.1,<4.2
 djangorestframework>=3.13.0,<3.14
 psycopg2>=2.9.6,<2.10
 drf-spectacular>=0.26.2,<0.27
