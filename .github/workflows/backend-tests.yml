@@ -29,6 +29,6 @@ jobs:
       # Checkout the code from the repo
       - name: Checkout
         uses: actions/checkout@v2
-      # Run linting
+      # Run the flake8 linter
       - name: Lint
         run: docker-compose run --rm backend sh -c "flake8"
