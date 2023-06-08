@@ -10,10 +10,10 @@ ENV PYTHONUNBUFFERED 1
 # Copy local files & app directory to docker image
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
-COPY ./app /app
+COPY ./backend /backend
 
 # Default path to run commands from
-WORKDIR /app
+WORKDIR /backend
 
 # Expose port 8000 to connect to the server
 EXPOSE 8000
@@ -44,7 +44,7 @@ RUN \
     rm -rf /tmp && \
     # Remove build dependencies
     apk del .tmp-build-deps && \
-    # Add a new user to connect to the backend 
+    # Add a new user to connect to the backend
     # to avoid using the root user permanently
     adduser \
         # Connect directly with no password

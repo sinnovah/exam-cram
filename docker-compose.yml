@@ -17,7 +17,7 @@ services:
       - "8000:8000"
     # Sync app local directory to container directory
     volumes:
-      - ./app:/app
+      - ./backend:/backend
     # Default command waits for DB, migrates then starts the server
     command: >
       sh -c "python manage.py wait_on_database &&
