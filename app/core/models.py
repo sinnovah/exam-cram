@@ -17,7 +17,7 @@ class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         '''
-        Creates, saves, and returns user. extra_fields can be used
+        Creates, saves, and returns a user. extra_fields can be used
         to add additional fields to the user model automatically.
         '''
         # Check if email was not provided
@@ -35,6 +35,19 @@ class UserManager(BaseUserManager):
         # Return user object
         return user
 
+    def create_superuser(self, email, password):
+        """Creates, saves, and returns a new superuser"""
+
+        # Create a standard user with create_user method
+        superuser = self.create_user(email, password)
+        # Set user as superuser and staff
+        superuser.is_staff = True
+        superuser.is_superuser = True
+        # Save the superuser to database
+        superuser.save(using=self._db)
+        # Return user object
+        return superuser
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
@@ -48,7 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=150)
     # Users are active by default, but can be deactivated.
     is_active = models.BooleanField(default=True)
-    # Users are not staff with admin access by default
+    # Users are not staff (admin access) by default
     # It can be changed to True to give admin access.
     is_staff = models.BooleanField(default=False)
 
