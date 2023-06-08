@@ -2,9 +2,6 @@
 Unit tests for models.
 """
 from django.test import TestCase
-# Use get_user_model to access the custom user model
-# Allows for a change to the default user model
-from django.contrib.auth import get_user_model
 
 from core.tests.helpers import create_user, create_superuser
 
