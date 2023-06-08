@@ -4,7 +4,7 @@ Unit tests for models.
 from django.test import TestCase
 # Use get_user_model to access the custom user model
 # Allows for a change to the default user model
-# from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model
 
 from core.tests import test_helpers as Helpers
 
@@ -58,3 +58,13 @@ class ModelTests(TestCase):
         with self.assertRaises(ValueError):
             # Create the user with an empty, invalid email
             Helpers.create_user(email='')
+
+    def test_create_superuser(self):
+        '''Test creating a new superuser'''
+
+        # Create the superuser
+        user = get_user_model().objects.create_superuser(USER, PASSWORD)
+
+        # Check that the user is a superuser and staff
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_staff)
