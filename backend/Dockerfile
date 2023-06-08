@@ -7,13 +7,11 @@ LABEL maintainer="sinnovah"
 # Ensure python output is unbuffered to avoid delays
 ENV PYTHONUNBUFFERED 1
 
-# Copy local files & app directory to docker image
-COPY ./requirements.txt /tmp/requirements.txt
-COPY ./requirements.dev.txt /tmp/requirements.dev.txt
-COPY ./app /app
+# Copy contents of the current directory into the backend directory
+COPY . /backend
 
 # Default path to run commands from
-WORKDIR /app
+WORKDIR /backend
 
 # Expose port 8000 to connect to the server
 EXPOSE 8000
@@ -21,7 +19,7 @@ EXPOSE 8000
 # When using docker-compose for dev, this argument is overidden to true
 ARG DEV=false
 
-# Run the following commands on the image
+# Run the following commands
 RUN \
     # Create virtual environment
     # Avoids conflicts with base image & project dependencies
@@ -34,17 +32,21 @@ RUN \
     apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev && \
     # Install dependencies
-    /py/bin/pip install -r /tmp/requirements.txt && \
+    /py/bin/pip install -r tmp/requirements.txt && \
     # Install development dependencies if in dev mode
     if [ $DEV = "true" ]; \
-        then /py/bin/pip install -r /tmp/requirements.dev.txt; \
+        then /py/bin/pip install -r tmp/requirements.dev.txt; \
+    # Remove tests directory in production mode
+    else \
+        cd core; \
+        rm -rf tests; \
     fi && \
     # Remove tmp directory because requirements files
     # are no longer needed. Keeps image light weight
-    rm -rf /tmp && \
+    rm -rf tmp && \
     # Remove build dependencies
     apk del .tmp-build-deps && \
-    # Add a new user to connect to the backend 
+    # Add a new user to connect to the backend
     # to avoid using the root user permanently
     adduser \
         # Connect directly with no password
@@ -57,5 +59,5 @@ RUN \
 # Saves typing /py/bin everytime when running commands
 ENV PATH="/py/bin:$PATH"
 
-# Switch to non-root backend user
+# Switch to non-root backend-user
 USER backend-user
