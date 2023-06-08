@@ -57,7 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # Email must be unique in the database for authentication
     email = models.EmailField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=150)
+    first_name = models.CharField(max_length=150, default='Change_me')
     last_name = models.CharField(max_length=150)
     # Users are active by default, but can be deactivated.
     is_active = models.BooleanField(default=True)
