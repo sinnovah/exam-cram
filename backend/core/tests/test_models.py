@@ -2,14 +2,12 @@
 Unit tests for models.
 """
 from django.test import TestCase
-# Use get_user_model to access the custom user model
-# Allows for a change to the default user model
-from django.contrib.auth import get_user_model
 
-from core.tests import test_helpers as Helpers
+from core.tests.helpers import create_user, create_superuser
 
-# Default values of create-user helper function
+# Default values of create_user and create_superuser helper functions
 USER = 'user@example.com'
+SUPERUSER = 'superuser@example.com'
 PASSWORD = 'ThirtyHairyHippos896'
 
 
@@ -20,7 +18,7 @@ class ModelTests(TestCase):
         """Test creating a new user with an email is successful."""
 
         # Create the user
-        user = Helpers.create_user()
+        user = create_user()
 
         # Test that the user's email was created successfully
         self.assertEqual(user.email, USER)
@@ -47,7 +45,7 @@ class ModelTests(TestCase):
         # Loop through the sample emails
         for input_email, output_email in sample_emails:
             # Create the user
-            user = Helpers.create_user(email=input_email)
+            user = create_user(email=input_email)
             # Test that the user's email was normalized successfully
             self.assertEqual(user.email, output_email)
 
@@ -57,14 +55,14 @@ class ModelTests(TestCase):
         # Test that a ValueError exception is raised
         with self.assertRaises(ValueError):
             # Create the user with an empty, invalid email
-            Helpers.create_user(email='')
+            create_user(email='')
 
     def test_create_superuser(self):
         '''Test creating a new superuser'''
 
         # Create the superuser
-        user = get_user_model().objects.create_superuser(USER, PASSWORD)
+        superuser = create_superuser()
 
         # Check that the user is a superuser and staff
-        self.assertTrue(user.is_superuser)
-        self.assertTrue(user.is_staff)
+        self.assertTrue(superuser.is_superuser)
+        self.assertTrue(superuser.is_staff)
