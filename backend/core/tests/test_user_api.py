@@ -1,7 +1,6 @@
 """
 Unit tests for the user API.
 """
-
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -68,9 +67,8 @@ class PublicUserApiTests(TestCase):
 
     def test_create_user_with_short_password_error(self):
         """
-        Test that trying to create a user with a password less than
-        8 characters returns a 400 bad request message in the response
-        and the user is not saved in the database.
+        Test that trying to create a user with a password less than 8
+        characters returns an error and the user is not in the database.
         """
 
         # Update the payload with a password less than 8 characters
@@ -81,9 +79,13 @@ class PublicUserApiTests(TestCase):
 
         # Test that the response is 400 BAD REQUEST
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the password too short error code is returned
+        self.assertEqual(
+            response.data['password'][0].code, 'password_too_short'
+        )
 
-        # Check if the user exists (boolean) by getting the user in
-        # the database with the email passed from payload
+        # Check if the user exists (boolean) by trying to get the
+        # user in the database with the email passed from payload
         user_exists = get_user_model().objects.filter(
             email=self.payload['email']
         ).exists()
