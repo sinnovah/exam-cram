@@ -16,10 +16,23 @@ Including another URLconf
 """
 import os
 
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+)
+
 from django.contrib import admin
 from django.urls import path
 
 urlpatterns = [
     # Custom Admin path stored in .env file
     path(os.environ.get('ADMIN_PATH'), admin.site.urls),
+    # DRF Spectacular view url for schema (generates YAML file)
+    path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
+    # DRF Spectacular view url for Swagger UI API documentation
+    path(
+        'api/docs/',
+        SpectacularSwaggerView.as_view(url_name='api-schema'),
+        name='api-docs'
+    )
 ]

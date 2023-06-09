@@ -134,5 +134,5 @@ AUTH_USER_MODEL = 'core.User'
 # Django REST Framework settings
 REST_FRAMEWORK = {
     # Use drf_spectacular's automatic OpenAPI schema generator
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
