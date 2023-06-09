@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core', # App created with: python manage.py startapp core
+    'rest_framework', # Framework to create REST APIs
+    'drf_spectacular', # Framework to create OpenAPI schemas
 ]
 
 MIDDLEWARE = [
@@ -128,3 +130,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom user model
 AUTH_USER_MODEL = 'core.User'
+
+# Django REST Framework settings
+REST_FRAMEWORK = {
+    # Use drf_spectacular's automatic OpenAPI schema generator
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
