@@ -21,7 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'email', 'password']
         # Extra keyword arguments passes extra metadata
         # Make password write only, i.e., password won't be in the response
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True, 'min_length': 8}}
 
     def create(self, validated_data):
         """Create a new valid user and return it"""

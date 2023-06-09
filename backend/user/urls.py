@@ -5,10 +5,10 @@ from django.urls import path
 
 from user import views
 
-# App name to add 'user/' in the URL path
+# App name for the user API
 app_name = 'user'
 
-# Url patterns after the app name
+# Url patterns for the user API
 urlpatterns = [
-    path('create/', views.CreateUserView.as_view(), name = 'create')
+    path('create/', views.CreateUserView.as_view(), name='create')
 ]
