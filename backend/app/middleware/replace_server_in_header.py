@@ -1,3 +1,8 @@
+"""
+Middleware to replace the Server header in the response with a custom string
+"""
+
+
 class ReplaceServerHeaderMiddleware(object):
     # One-time configuration and initialization.
     def __init__(self, get_response):
