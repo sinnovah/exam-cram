@@ -24,7 +24,12 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_password(self, password):
-        """Validate the password"""
+        """
+        Validate the password with Django's validators
+        Checks if the password is less than 8 characters
+        Checks if the password is too common
+        Checks if the password is entirely numeric
+        """
 
         # Validate the password against Django's validators
         password_validation.validate_password(password)

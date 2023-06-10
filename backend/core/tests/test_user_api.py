@@ -2,8 +2,9 @@
 Unit tests for the user API.
 """
 from django.test import TestCase
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, password_validation
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -40,13 +41,21 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Test that the user was created successfully
-        # Get the user  the database with the email passed from payload
+        # Get the user the database with the email passed from payload
         user = get_user_model().objects.get(email=self.payload['email'])
 
         # Test that the user's password is correct
         self.assertTrue(user.check_password(self.payload['password']))
         # Test that the key password is not returned in the response
         self.assertNotIn('password', response.data)
+
+        # Get the user's stored hashed password
+        # Let Django handle the password hashing
+        stored_password = user.password
+
+        # Test that the stored password is not the same as the
+        # password passed in the payload
+        self.assertNotEqual(stored_password, self.payload['password'])
 
     def test_create_user_with_email_exists_error(self):
         """
@@ -74,6 +83,10 @@ class PublicUserApiTests(TestCase):
         # Update the payload with a password less than 8 characters
         self.payload['password'] = 'short'
 
+        # Test that a validation error message raised
+        with self.assertRaises(ValidationError):
+            password_validation.validate_password(self.payload['password'])
+
         # Make a POST request to the create user endpoint
         response = self.client.post(CREATE_USER_URL, self.payload)
 
@@ -92,3 +105,51 @@ class PublicUserApiTests(TestCase):
 
         # Test that the user does not exist (False)
         self.assertFalse(user_exists)
+
+    def test_create_user_with_common_password_error(self):
+        """
+        Test that trying to create a user with
+        a common password returns an error.
+        """
+
+        # Update the payload with a common password
+        self.payload['password'] = 'iloveyou'
+
+        # Test that a validation error is raised
+        with self.assertRaises(ValidationError):
+            password_validation.validate_password(self.payload['password'])
+
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Test that the password too short error code is returned
+        self.assertEqual(
+            response.data['password'][0].code, 'password_too_common'
+        )
+
+    def test_create_user_with_all_numeric_password_error(self):
+        """
+        Test that trying to create a user with an all
+        numeric password returns an error.
+        """
+
+        # Update the payload with a numeric password
+        self.payload['password'] = '284527272381290'
+
+        # Test that a validation error is raised
+        with self.assertRaises(ValidationError):
+            password_validation.validate_password(self.payload['password'])
+
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Test that the password entirely numeric error code is returned
+        self.assertEqual(
+            response.data['password'][0].code, 'password_entirely_numeric'
+        )
