@@ -22,17 +22,19 @@ from drf_spectacular.views import (
 )
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
-    # Custom Admin path stored in .env file
+    # Custom Admin path stored in the .env file
     path(os.environ.get('ADMIN_PATH'), admin.site.urls),
-    # DRF Spectacular view url for schema (generates YAML file)
+    # DRF Spectacular view URL for schema (generates YAML file)
     path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
-    # DRF Spectacular view url for Swagger UI API documentation
+    # DRF Spectacular view URL for Swagger UI API documentation
     path(
         'api/docs/',
         SpectacularSwaggerView.as_view(url_name='api-schema'),
         name='api-docs'
-    )
+    ),
+    # Include the view URLs from API's apps
+    path('api/user/', include('user.urls')),
 ]
