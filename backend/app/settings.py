@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core', # Core handles models, migrations, tests and admin
     'rest_framework', # Framework to create REST APIs
+    'rest_framework.authtoken', # Token authentication for REST APIs
     'drf_spectacular', # Framework to create OpenAPI schemas
     'user', # User API
 ]
