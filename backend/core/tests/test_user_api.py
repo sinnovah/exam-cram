@@ -10,8 +10,9 @@ from rest_framework import status
 
 from core.tests.helpers import create_user
 
-# User API URL constants
+# User API URL endpoint constants
 CREATE_USER_URL = reverse('user:create')
+TOKEN_URL = reverse('user:token')
 
 
 class PublicUserApiTests(TestCase):
@@ -387,4 +388,148 @@ class PublicUserApiTests(TestCase):
         # Test that the required error code is returned
         self.assertEqual(
             response.data['last_name'][0].code, 'required'
+        )
+
+    def test_create_token_success(self):
+        """Test that a token is created for valid user credentials."""
+
+        # Create a user in the database with
+        # the details in the payload
+        create_user(**self.payload)
+
+        # Make a POST request to the create token endpoint
+        response = self.client.post(TOKEN_URL, self.payload)
+
+        # Test that the response is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that the token was created successfully
+        self.assertIn('token', response.data)
+
+    def test_create_token_with_invalid_password_error(self):
+        """
+        Test that trying to create a token with invalid password
+        returns an error.
+        """
+
+        # Create a user in the database with
+        # the details in the payload
+        create_user(**self.payload)
+
+        # Update the payload with invalid password
+        self.payload['password'] = 'wrong_password'
+        # Make a POST request to the create token endpoint
+        response = self.client.post(TOKEN_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the token was not created
+        self.assertNotIn('token', response.data)
+        # Test that the authorization error code is returned
+        self.assertEqual(
+            response.data['non_field_errors'][0].code, 'authorization'
+        )
+
+    def test_create_token_with_an_empty_password_error(self):
+        """
+        Test that trying to create a token with an empty
+        string password returns an error.
+        """
+
+        # Update the payload with an empty password
+        self.payload['password'] = ''
+        # Make a POST request to the create token endpoint
+        response = self.client.post(TOKEN_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the token was not created
+        self.assertNotIn('token', response.data)
+        # Test that the blank error code is returned
+        self.assertEqual(
+            response.data['password'][0].code, 'blank'
+        )
+
+    def test_create_token_with_no_password_error(self):
+        """
+        Test that trying to create a token with no password
+        returns an error.
+        """
+
+        # Remove the password from the payload
+        self.payload.pop('password')
+        # Make a POST request to the create token endpoint
+        response = self.client.post(TOKEN_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the token was not created
+        self.assertNotIn('token', response.data)
+        # Test that the required error code is returned
+        self.assertEqual(
+            response.data['password'][0].code, 'required'
+        )
+
+    def test_create_token_with_invalid_email_error(self):
+        """
+        Test that trying to create a token with invalid email
+        returns an error.
+        """
+
+        # Create a user in the database with
+        # the details in the payload
+        create_user(**self.payload)
+
+        # Update the payload with invalid email
+        self.payload['email'] = 'notindatabase@example.com'
+
+        # Make a POST request to the create token endpoint
+        response = self.client.post(TOKEN_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the token was not created
+        self.assertNotIn('token', response.data)
+        # Test that the authorization error code is returned
+        self.assertEqual(
+            response.data['non_field_errors'][0].code, 'authorization'
+        )
+
+    def test_create_token_with_an_empty_email_error(self):
+        """
+        Test that trying to create a token with an empty
+        string email returns an error.
+        """
+
+        # Update the payload with an empty email
+        self.payload['email'] = ''
+        # Make a POST request to the create token endpoint
+        response = self.client.post(TOKEN_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the token was not created
+        self.assertNotIn('token', response.data)
+        # Test that the blank error code is returned
+        self.assertEqual(
+            response.data['email'][0].code, 'blank'
+        )
+
+    def test_create_token_with_no_email_error(self):
+        """
+        Test that trying to create a token with no email
+        returns an error.
+        """
+
+        # Remove the email from the payload
+        self.payload.pop('email')
+        # Make a POST request to the create token endpoint
+        response = self.client.post(TOKEN_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the token was not created
+        self.assertNotIn('token', response.data)
+        # Test that the required error code is returned
+        self.assertEqual(
+            response.data['email'][0].code, 'required'
         )
