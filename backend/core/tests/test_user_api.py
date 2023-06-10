@@ -2,9 +2,8 @@
 Unit tests for the user API.
 """
 from django.test import TestCase
-from django.contrib.auth import get_user_model, password_validation
+from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.core.exceptions import ValidationError
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -82,11 +81,6 @@ class PublicUserApiTests(TestCase):
 
         # Update the payload with a password less than 8 characters
         self.payload['password'] = 'short'
-
-        # Test that a validation error message raised
-        with self.assertRaises(ValidationError):
-            password_validation.validate_password(self.payload['password'])
-
         # Make a POST request to the create user endpoint
         response = self.client.post(CREATE_USER_URL, self.payload)
 
@@ -106,6 +100,24 @@ class PublicUserApiTests(TestCase):
         # Test that the user does not exist (False)
         self.assertFalse(user_exists)
 
+    def test_create_user_with_long_password_error(self):
+        """
+        Test that trying to create a user with a password more than 128
+        characters returns an error.
+        """
+
+        # Update the payload with a password more than 128 characters
+        self.payload['password'] = 'a' * 129
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the max_length error code is returned
+        self.assertEqual(
+            response.data['password'][0].code, 'max_length'
+        )
+
     def test_create_user_with_common_password_error(self):
         """
         Test that trying to create a user with
@@ -114,17 +126,11 @@ class PublicUserApiTests(TestCase):
 
         # Update the payload with a common password
         self.payload['password'] = 'iloveyou'
-
-        # Test that a validation error is raised
-        with self.assertRaises(ValidationError):
-            password_validation.validate_password(self.payload['password'])
-
         # Make a POST request to the create user endpoint
         response = self.client.post(CREATE_USER_URL, self.payload)
 
         # Test that the response is 400 BAD REQUEST
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
         # Test that the password too short error code is returned
         self.assertEqual(
             response.data['password'][0].code, 'password_too_common'
@@ -138,18 +144,48 @@ class PublicUserApiTests(TestCase):
 
         # Update the payload with a numeric password
         self.payload['password'] = '284527272381290'
-
-        # Test that a validation error is raised
-        with self.assertRaises(ValidationError):
-            password_validation.validate_password(self.payload['password'])
-
         # Make a POST request to the create user endpoint
         response = self.client.post(CREATE_USER_URL, self.payload)
 
         # Test that the response is 400 BAD REQUEST
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
         # Test that the password entirely numeric error code is returned
         self.assertEqual(
             response.data['password'][0].code, 'password_entirely_numeric'
+        )
+
+    def test_create_user_with_an_empty_password_error(self):
+        """
+        Test that trying to create a user with an empty
+        string password returns an error.
+        """
+
+        # Update the payload with an empty password
+        self.payload['password'] = ''
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the blank error code is returned
+        self.assertEqual(
+            response.data['password'][0].code, 'blank'
+        )
+
+    def test_create_user_with_no_password_error(self):
+        """
+        Test that trying to create a user with no password
+        returns an error.
+        """
+
+        # Remove the password from the payload
+        self.payload.pop('password')
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the required error code is returned
+        self.assertEqual(
+            response.data['password'][0].code, 'required'
         )
