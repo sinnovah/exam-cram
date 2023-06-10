@@ -8,7 +8,7 @@ from user.serializers import UserSerializer
 
 class CreateUserView(generics.CreateAPIView):
     """
-    Create user, publicly available API endpoint.
+    Create user, publicly available API endpoint [POST].
     """
     # Extends DRF's API view.
 

@@ -275,3 +275,116 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(
             response.data['password'][0].code, 'required'
         )
+
+    def test_create_user_with_long_first_name_error(self):
+        """
+        Test that trying to create a user with a first name longer than
+        150 characters returns an error.
+        """
+
+        # Update the payload with a long first name
+        self.payload['first_name'] = 'a' * 151
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the max_length error code is returned
+        self.assertEqual(
+            response.data['first_name'][0].code, 'max_length'
+        )
+
+    def test_create_user_with_an_empty_first_name_error(self):
+        """
+        Test that trying to create a user with an empty
+        string first name returns an error.
+        """
+
+        # Update the payload with an empty first name
+        self.payload['first_name'] = ''
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Test that the blank error code is returned
+        self.assertEqual(
+            response.data['first_name'][0].code, 'blank'
+        )
+
+    def test_create_user_with_no_first_name_error(self):
+        """
+        Test that trying to create a user with no first name
+        returns an error.
+        """
+
+        # Remove the first name from the payload
+        self.payload.pop('first_name')
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Test that the required error code is returned
+        self.assertEqual(
+            response.data['first_name'][0].code, 'required'
+        )
+
+    def test_create_user_with_long_last_name_error(self):
+        """
+        Test that trying to create a user with a last name longer than
+        150 characters returns an error.
+        """
+
+        # Update the payload with a long last name
+        self.payload['last_name'] = 'a' * 151
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Test that the max_length error code is returned
+        self.assertEqual(
+            response.data['last_name'][0].code, 'max_length'
+        )
+
+    def test_create_user_with_an_empty_last_name_error(self):
+        """
+        Test that trying to create a user with an empty
+        string last name returns an error.
+        """
+
+        # Update the payload with an empty last name
+        self.payload['last_name'] = ''
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Test that the blank error code is returned
+        self.assertEqual(
+            response.data['last_name'][0].code, 'blank'
+        )
+
+    def test_create_user_with_no_last_name_error(self):
+        """
+        Test that trying to create a user with no last name
+        returns an error.
+        """
+
+        # Remove the last name from the payload
+        self.payload.pop('last_name')
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Test that the required error code is returned
+        self.assertEqual(
+            response.data['last_name'][0].code, 'required'
+        )
