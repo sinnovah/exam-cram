@@ -15,15 +15,13 @@ class AdminTests(TestCase):
 
         # Create a test client to make http requests
         self.client = Client()
-
         # Create a superuser
         self.superuser = create_superuser()
+        # Create a standard user
+        self.user = create_user()
 
         # Log the superuser in with forced authentication
         self.client.force_login(self.superuser)
-
-        # Create a standard user
-        self.user = create_user(first_name='Test', last_name='User')
 
     def test_list_users(self):
         """Test listing users page in the admin panel works."""

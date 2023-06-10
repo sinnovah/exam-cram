@@ -37,9 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core', # App created with: python manage.py startapp core
+    'core', # Core handles models, migrations, tests and admin
     'rest_framework', # Framework to create REST APIs
     'drf_spectacular', # Framework to create OpenAPI schemas
+    'user', # User API
 ]
 
 MIDDLEWARE = [
