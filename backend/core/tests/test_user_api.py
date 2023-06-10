@@ -72,6 +72,92 @@ class PublicUserApiTests(TestCase):
 
         # Test that the response is 400 BAD REQUEST
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the email already exists error code is returned
+        self.assertEqual(
+            response.data['email'][0].code, 'unique'
+        )
+
+    def test_create_user_with_invalid_email_format_error(self):
+        """
+        Test that trying to create a user with an invalid email format
+        returns an error.
+        """
+
+        # List of invalid emails
+        invalid_emails = [
+            "userexamplecom",
+            "user@examplecom",
+            "userexample.com"
+        ]
+
+        # Loop through the invalid emails
+        for invalid_email in invalid_emails:
+
+            # Update the payload with an invalid email format
+            self.payload['email'] = 'invalid_email_format'
+            # Make a POST request to the create user endpoint
+            response = self.client.post(CREATE_USER_URL, self.payload)
+
+            # Test that the response is 400 BAD REQUEST
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            # Test that the invalid error code is returned
+            self.assertEqual(
+                response.data['email'][0].code, 'invalid'
+            )
+
+    def test_create_user_with_long_email_error(self):
+        """
+        Test that trying to create a user with an email longer than 254
+        characters returns an error.
+        """
+
+        # Update the payload with a long email
+        self.payload['email'] = 'a' * 255 + '@example.com'
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the max_length error code is returned
+        self.assertEqual(
+            response.data['email'][0].code, 'max_length'
+        )
+
+    def test_create_user_with_an_empty_email_error(self):
+        """
+        Test that trying to create a user with an empty
+        string email returns an error.
+        """
+
+        # Update the payload with an empty email
+        self.payload['email'] = ''
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the blank error code is returned
+        self.assertEqual(
+            response.data['email'][0].code, 'blank'
+        )
+
+    def test_create_user_with_no_email_error(self):
+        """
+        Test that trying to create a user with no email
+        returns an error.
+        """
+
+        # Remove the email from the payload
+        self.payload.pop('email')
+        # Make a POST request to the create user endpoint
+        response = self.client.post(CREATE_USER_URL, self.payload)
+
+        # Test that the response is 400 BAD REQUEST
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Test that the required error code is returned
+        self.assertEqual(
+            response.data['email'][0].code, 'required'
+        )
 
     def test_create_user_with_short_password_error(self):
         """
