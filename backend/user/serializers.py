@@ -8,8 +8,8 @@ from rest_framework import serializers
 
 class UserSerializer(serializers.ModelSerializer):
     """
-    Serializer for the user object. Takes JSON, validates it,
-    then and saves it to the user model.
+    User object. Publicly available fields are first_name, last_name,
+    email, and password in order to create a new user.
     """
 
     class Meta:
