@@ -50,5 +50,6 @@ class CustomUserAdmin(UserAdmin):
     )
 
 
-# Register the user model with the custom admin class
+# Register the models with the admin panel
 admin.site.register(models.User, CustomUserAdmin)
+admin.site.register(models.Topic)
