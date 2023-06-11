@@ -25,8 +25,7 @@ def create_user(
 
 def create_superuser(
         email='superuser@example.com',
-        password='ThirtyHairyHippos896',
-    ):
+        password='ThirtyHairyHippos896',):
     '''
     Helper function to create superusers for testing.
     '''
