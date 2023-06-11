@@ -5,6 +5,8 @@ Helpers to reuse in tests.
 # Allows for a change to the default user model
 from django.contrib.auth import get_user_model
 
+from core import models
+
 
 def create_user(
         email='user@example.com',
@@ -34,4 +36,20 @@ def create_superuser(
     return get_user_model().objects.create_superuser(
         email=email,
         password=password,
+    )
+
+
+def create_topic(
+        title='Test Topic',
+        notes='Test notes for my topic',
+        **extras):
+    '''
+    Helper function to create topics for testing.
+    '''
+
+    # Create the topic for the user
+    return models.Topic.objects.create(
+        title=title,
+        notes=notes,
+        **extras
     )
