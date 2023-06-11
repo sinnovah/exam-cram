@@ -37,4 +37,5 @@ urlpatterns = [
     ),
     # Include the view URLs from API's apps
     path('api/user/', include('user.urls')),
+    path('api/topic/', include('topic.urls')),
 ]

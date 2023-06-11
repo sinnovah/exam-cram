@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken', # Token authentication for REST APIs
     'drf_spectacular', # Framework to create OpenAPI schemas
     'user', # User API
+    'topic', # Topic API
 ]
 
 MIDDLEWARE = [
