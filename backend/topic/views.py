@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.models import Topic
 from topic import serializers
 
+
 class TopicViewSet(viewsets.ModelViewSet):
     """
     Manage topics [GET, POST, PUT, PATCH, DELETE].
