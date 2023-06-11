@@ -13,7 +13,7 @@ from core.models import Topic
 from topic.serializers import TopicSerializer
 
 # Topic API URL endpoint constants
-TOPICS_URL = reverse('topic:list')
+TOPICS_URL = reverse('topic:topic-list')
 
 
 class PublicTopicApiTests(TestCase):
