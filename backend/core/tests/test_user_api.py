@@ -13,6 +13,7 @@ from core.tests.helpers import create_user
 # User API URL endpoint constants
 CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
+MANAGE_USER_URL = reverse('user:manage')
 
 
 class PublicUserApiTests(TestCase):
@@ -533,3 +534,88 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(
             response.data['email'][0].code, 'required'
         )
+
+    def test_authentication_required_for_user(self):
+        """
+        Test that authentication is required for users.
+        """
+
+        # Make a GET request to the user endpoint
+        response = self.client.get(MANAGE_USER_URL)
+
+        # Test that the response is 401 UNAUTHORIZED
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        # Test that the authentication required error code is returned
+        self.assertEqual(
+            response.data['detail'].code, 'not_authenticated'
+        )
+
+
+class PrivateUserApiTests(TestCase):
+    """Test suite for the user API (private access)."""
+
+    def setUp(self):
+        """Set up the test suite."""
+
+        # Create a user
+        self.user = create_user()
+        # Create a test client to make test http requests
+        self.client = APIClient()
+        # Authenticate the user with the client
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_user_profile_success(self):
+        """Test retrieving the logged in user's profile is successful."""
+
+        # Make a GET request to the manage user endpoint
+        response = self.client.get(MANAGE_USER_URL)
+
+        # Test that the response is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that the response data matches the user's details
+        self.assertEqual(response.data, {
+            'first_name': self.user.first_name,
+            'last_name': self.user.last_name,
+            'email': self.user.email
+        })
+        # Test that the key password is not returned in the response
+        self.assertNotIn('password', response.data)
+
+    def test_manage_user_post_method_not_allowed(self):
+        """Test that POST is not allowed on the manage user url."""
+
+        # Make a POST request to the manage user endpoint
+        response = self.client.post(MANAGE_USER_URL)
+
+        # Test that the response is 405 METHOD NOT ALLOWED
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
+        # Test that the response data matches the error message
+        self.assertEqual(response.data, {
+            'detail': 'Method "POST" not allowed.'
+        })
+
+    def test_patch_manage_user_success(self):
+        """
+        Test updating the logged in user's profile with PATCH is successful.
+        """
+
+        # Payload for the manage user endpoint request
+        payload = {
+            'first_name': 'NewName',
+            'password': '2_elephants_in_a_boat'
+        }
+        # Make a PATCH request to the manage user endpoint
+        response = self.client.patch(MANAGE_USER_URL, payload)
+
+        # Refresh the user object with the latest values from the database
+        self.user.refresh_from_db()
+
+        # Test that the response is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that the user's first name was updated successfully
+        self.assertEqual(self.user.first_name, payload['first_name'])
+        # Test that the user's password was updated successfully
+        self.assertTrue(self.user.check_password(payload['password']))
+        # Test that the key password is not returned in the response
+        self.assertNotIn('password', response.data)

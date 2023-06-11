@@ -13,8 +13,8 @@ from rest_framework import serializers
 
 class UserSerializer(serializers.ModelSerializer):
     """
-    User object. Publicly available fields are first_name, last_name,
-    email, and password in order to create a new user.
+    User object. first_name, last_name,
+    email, and password fields.
     """
 
     class Meta:
@@ -46,6 +46,26 @@ class UserSerializer(serializers.ModelSerializer):
 
         # Create a user if the validation of the data was a success
         return get_user_model().objects.create_user(**validated_data)
+
+    def update(self, instance, validated_data):
+        """Update a user with encrypted password correctly and return it"""
+
+        # Get the password from the validated data
+        # If the password is not provided, return None
+        password = validated_data.pop('password', None)
+        # Update the user with the validated data
+        # with existing update method from ModelSerializer
+        user = super().update(instance, validated_data)
+
+        # If a password was provided
+        if password:
+            # Set the password (encrypts it)
+            user.set_password(password)
+            # Save the user to the database
+            user.save()
+
+        # Return the user
+        return user
 
 
 class TokenSerializer(serializers.Serializer):
