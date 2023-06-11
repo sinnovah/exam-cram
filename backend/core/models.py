@@ -7,6 +7,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin
 )
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -70,3 +71,33 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # Replace the default username field with email
     USERNAME_FIELD = 'email'
+
+
+class Topic(models.Model):
+    """
+    Model for the topic to be studied.
+    Extends Django's standard Model.
+    """
+    # User that the topic belongs to.
+    # A user can have many topics.
+    # A topic must have one user.
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        # When a user is deleted so is their topics
+        on_delete=models.CASCADE
+    )
+    # Topic title
+    title = models.CharField(max_length=255)
+    # Topic notes
+    notes = models.TextField(blank=True)
+    # Date and time the topic was last modified. Stores the
+    # current DateTime on Topic creation and updates.
+    last_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        """
+        Return the title as a string representation
+        of the topic object.
+        """
+
+        return self.title

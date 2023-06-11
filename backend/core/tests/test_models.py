@@ -3,12 +3,20 @@ Unit tests for models.
 """
 from django.test import TestCase
 
-from core.tests.helpers import create_user, create_superuser
+from core.tests.helpers import (
+    create_user,
+    create_superuser,
+    create_topic
+)
 
 # Default values of create_user and create_superuser helper functions
 USER = 'user@example.com'
 SUPERUSER = 'superuser@example.com'
 PASSWORD = 'ThirtyHairyHippos896'
+
+# Default values of create_topic helper function
+TOPIC_TITLE = 'Test Topic'
+TOPIC_NOTES = 'Test notes for my topic'
 
 
 class ModelTests(TestCase):
@@ -49,7 +57,7 @@ class ModelTests(TestCase):
             # Test that the user's email was normalized successfully
             self.assertEqual(user.email, output_email)
 
-    def test_empty_user_email_raises_error(self):
+    def test_create_user_with_empty_email_error(self):
         '''Test that creating a user without an email raises a ValueError'''
 
         # Test that a ValueError exception is raised
@@ -66,3 +74,22 @@ class ModelTests(TestCase):
         # Check that the user is a superuser and staff
         self.assertTrue(superuser.is_superuser)
         self.assertTrue(superuser.is_staff)
+
+    def test_create_topic_success(self):
+        """Test creating a new topic is successful."""
+
+        # Create a user
+        user = create_user()
+
+        # Create the topic for the user
+        topic = create_topic(user=user)
+
+        # Test that the topic's title, notes user
+        # and user were created successfully
+        self.assertEqual(topic.title, TOPIC_TITLE)
+        self.assertEqual(topic.notes, TOPIC_NOTES)
+        self.assertEqual(topic.user, user)
+        # Test that the string representation of the topic is the title
+        self.assertEqual(str(topic), topic.title)
+        # Test that the last_modified DataTime field is not None
+        self.assertIsNotNone(topic.last_modified)
