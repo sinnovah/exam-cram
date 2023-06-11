@@ -545,7 +545,7 @@ class PublicUserApiTests(TestCase):
 
         # Test that the response is 401 UNAUTHORIZED
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        # Test that the authentication required error code is returned
+        # Test that the not authenticated error code is returned
         self.assertEqual(
             response.data['detail'].code, 'not_authenticated'
         )

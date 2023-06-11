@@ -42,7 +42,7 @@ def create_superuser(
 def create_topic(
         title='Test Topic',
         notes='Test notes for my topic',
-        **extras):
+        **params):  # Allows for additional parameters to be passed in
     '''
     Helper function to create topics for testing.
     '''
@@ -51,5 +51,5 @@ def create_topic(
     return models.Topic.objects.create(
         title=title,
         notes=notes,
-        **extras
+        **params
     )
