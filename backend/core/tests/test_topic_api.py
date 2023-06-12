@@ -10,7 +10,7 @@ from rest_framework import status
 from core.tests.helpers import (
     create_user,
     create_topic,
-    create_topic_url
+    topic_details_url
 )
 from core.models import Topic
 
@@ -138,7 +138,7 @@ class PrivateTopicApiTests(TestCase):
         # Create a test topic for the user
         topic = create_topic(user=self.user)
         # URL for the topic, passing in the topic id
-        url = create_topic_url(topic.id)
+        url = topic_details_url(topic.id)
         # Retrieve the topic for the authenticated user
         response = self.client.get(url)
         # Serialize the topic retrieved from the database
@@ -172,3 +172,123 @@ class PrivateTopicApiTests(TestCase):
 
         # Test that the topic's user is the authenticated user
         self.assertEqual(topic.user, self.user)
+
+    def test_patch_topic_success(self):
+        """
+        Test partially updating a topic is successful.
+        """
+
+        # Create a topic for the user
+        topic = create_topic(user=self.user)
+        # URL for the topic, passing in the topic id
+        url = topic_details_url(topic.id)
+        # Payload to partially update the topic
+        patch_payload = {
+            'title': 'Updated title',
+        }
+        # Patch the topic with the payload
+        response = self.client.patch(url, patch_payload)
+
+        # Test that the patch topic request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Refresh the topic from the database
+        topic.refresh_from_db()
+
+        # Test that the topic's title was patched
+        self.assertEqual(topic.title, patch_payload['title'])
+        # Test that the topic's notes were not patched
+        self.assertEqual(topic.notes, self.payload['notes'])
+        # Test that the topic's user is the authenticated user
+        # (not patched)
+        self.assertEqual(topic.user, self.user)
+
+    def test_put_topic_success(self):
+        """
+        Test updating a topic is successful.
+        """
+
+        # Create a topic for the user
+        topic = create_topic(user=self.user)
+        original_last_modified = topic.last_modified
+        # URL for the topic, passing in the topic id
+        url = topic_details_url(topic.id)
+        # Payload to update the topic
+        put_payload = {
+            'title': 'Updated title',
+            'notes': 'Updated notes',
+        }
+        # Put the topic with the payload
+        response = self.client.put(url, put_payload)
+
+        # Test that the put topic request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Refresh the topic from the database
+        topic.refresh_from_db()
+
+        # Test that the topic's title was updated
+        self.assertEqual(topic.title, put_payload['title'])
+        # Test that the topic's notes were updated
+        self.assertEqual(topic.notes, put_payload['notes'])
+        # Test that the topic's last modified was updated
+        self.assertNotEqual(topic.last_modified, original_last_modified)
+        # Test that the topic's user is the authenticated user
+        # (not updated)
+        self.assertEqual(topic.user, self.user)
+
+    def test_patch_topic_with_different_user_not_allowed(self):
+        """
+        Test that updating a topic with a different user is not allowed.
+        """
+
+        # Create a topic for the user
+        topic = create_topic(user=self.user)
+        # Create another test user
+        other_user = create_user(email='other-user@example.com')
+        # Payload to try update the topic's user
+        payload = {'user': other_user.id}
+        # URL for the topic, passing in the topic id
+        url = topic_details_url(topic.id)
+
+        # Attempt to update the topic with the payload
+        self.client.patch(url, payload)
+        # Refresh the topic from the database
+        topic.refresh_from_db()
+
+        # Test that the patch topic user request was not successful
+        self.assertEqual(topic.user, self.user)
+
+    def test_delete_topic_success(self):
+        """
+        Test deleting a topic is successful.
+        """
+
+        # Create a topic for the user
+        topic = create_topic(user=self.user)
+        # URL for the topic, passing in the topic id
+        url = topic_details_url(topic.id)
+        # Delete the topic
+        response = self.client.delete(url)
+
+        # Test that the delete topic request was successful
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        # Test that the topic was deleted
+        self.assertFalse(Topic.objects.filter(id=topic.id).exists())
+
+    def test_delete_topic_with_different_user_not_allowed(self):
+        """
+        Test that deleting a topic with a different user is not allowed.
+        """
+
+        # Create another test user
+        other_user = create_user(email='other-user@example.com')
+        # Create a topic for the other user
+        topic = create_topic(user=other_user)
+        # URL for the topic, passing in the topic id
+        url = topic_details_url(topic.id)
+        # Try delete the other user's topic
+        result = self.client.delete(url)
+
+        # Test that the delete topic request was not successful
+        self.assertEqual(result.status_code, status.HTTP_404_NOT_FOUND)
+        # Test that the topic was not deleted
+        self.assertTrue(Topic.objects.filter(id=topic.id).exists())
