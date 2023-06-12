@@ -68,6 +68,12 @@ class PrivateTopicApiTests(TestCase):
         # Authenticate the test user
         self.client.force_authenticate(user=self.user)
 
+        # Topic data to send to endpoints
+        self.payload = {
+            'title': 'Test Topic',
+            'notes': 'Test notes for my topic',
+        }
+
     def test_list_topics_success(self):
         """
         Test retrieving and listing topics for a user is successful.
@@ -87,7 +93,7 @@ class PrivateTopicApiTests(TestCase):
         # Many=True because we are serializing a list of topic objects
         serializer = TopicSerializer(topics, many=True)
 
-        # Test that the topics request was successful
+        # Test that the get topics request was successful
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Test that there are 2 topics in the response
         self.assertEqual(len(response.data), 2)
@@ -116,7 +122,7 @@ class PrivateTopicApiTests(TestCase):
         # Many=True because we are serializing a list of topic objects
         serializer = TopicSerializer(topics, many=True)
 
-        # Test that the topics request was successful
+        # Test that the get topics request was successful
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Test that there is 1 topic in the response
         self.assertEqual(len(response.data), 1)
@@ -138,8 +144,31 @@ class PrivateTopicApiTests(TestCase):
         # Serialize the topic retrieved from the database
         serializer = TopicDetailSerializer(topic)
 
-        # Test that the topic request was successful
+        # Test that the get topic request was successful
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Test that the topic in the response matches
         # the serialized topic from the database
         self.assertEqual(response.data, serializer.data)
+
+    def test_create_topic_success(self):
+        """
+        Test creating a topic is successful.
+        """
+
+        # Create a topic for the user
+        response = self.client.post(TOPICS_URL, self.payload)
+
+        # Test that the create topic post request was successful
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Retrieve the topic from the database by response's id
+        topic = Topic.objects.get(id=response.data['id'])
+
+        # Iterate over the payload
+        for key, value in self.payload.items():
+            # Test that the payload's value matches the topics's value
+            # getattr() to get the topic values with the payload's keys
+            self.assertEqual(value, getattr(topic, key))
+
+        # Test that the topic's user is the authenticated user
+        self.assertEqual(topic.user, self.user)
