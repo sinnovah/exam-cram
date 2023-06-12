@@ -6,7 +6,8 @@ from django.test import TestCase
 from core.tests.helpers import (
     create_user,
     create_superuser,
-    create_topic
+    create_topic,
+    create_tag
 )
 
 # Default values of create_user and create_superuser helper functions
@@ -17,6 +18,9 @@ PASSWORD = 'ThirtyHairyHippos896'
 # Default values of create_topic helper function
 TOPIC_TITLE = 'Test Topic'
 TOPIC_NOTES = 'Test notes for my topic'
+
+# Default value of create_tag helper function
+TAG_NAME = 'Test Tag'
 
 
 class ModelTests(TestCase):
@@ -93,3 +97,17 @@ class ModelTests(TestCase):
         self.assertEqual(str(topic), topic.title)
         # Test that the last_modified DataTime field is not None
         self.assertIsNotNone(topic.last_modified)
+
+    def test_create_tag_success(self):
+        """Test creating a new tag is successful."""
+
+        # Create a user
+        user = create_user()
+        # Create the tag instance
+        tag = create_tag(user=user)
+
+        # Test that the tag's name and user were created successfully
+        self.assertEqual(tag.name, TAG_NAME)
+        self.assertEqual(tag.user, user)
+        # Test that the string representation of the tag is the name
+        self.assertEqual(str(tag), tag.name)

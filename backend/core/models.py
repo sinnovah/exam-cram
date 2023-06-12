@@ -78,6 +78,7 @@ class Topic(models.Model):
     Model for the topic to be studied.
     Extends Django's standard Model.
     """
+
     # User that the topic belongs to.
     # A user can have many topics.
     # A topic must have one user.
@@ -93,6 +94,10 @@ class Topic(models.Model):
     # Date and time the topic was last modified. Stores the
     # current DateTime on Topic creation and updates.
     last_modified = models.DateTimeField(auto_now=True)
+    # Tags that can be allocated to topics.
+    # A topic can have many tags.
+    # A tag can have many topics.
+    tags = models.ManyToManyField('Tag')
 
     def __str__(self):
         """
@@ -101,3 +106,29 @@ class Topic(models.Model):
         """
 
         return self.title
+
+
+class Tag(models.Model):
+    """
+    Model for the tags that can be allocated to topics.
+    Allows for topic filtering by tags.
+    Extends Django's standard Model.
+    """
+
+    name = models.CharField(max_length=255)
+    # User that the tag belongs to.
+    # A user can have many tags.
+    # A tag must have one user.
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        # When a user is deleted so are their tags
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        """
+        Return the name as a string representation
+        of the tag object.
+        """
+
+        return self.name
