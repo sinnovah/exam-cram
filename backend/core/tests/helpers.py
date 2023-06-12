@@ -4,6 +4,7 @@ Helpers to reuse in tests.
 # Use get_user_model to access the custom user model
 # Allows for a change to the default user model
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 from core import models
 
@@ -53,3 +54,12 @@ def create_topic(
         notes=notes,
         **params
     )
+
+
+def create_topic_url(topic_id):
+    '''
+    Helper function to create topic detail urls for testing.
+    '''
+
+    # Return the url for the topic detail
+    return reverse('topic:topic-detail', args=[topic_id])
