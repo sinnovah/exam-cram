@@ -11,7 +11,7 @@ from topic import serializers
 
 class TopicViewSet(viewsets.ModelViewSet):
     """
-    Manage topics [GET, POST, PUT, PATCH, DELETE].
+    Manage topics.
     """
     # Extends DRF's ModelViewSet.
 
@@ -45,3 +45,12 @@ class TopicViewSet(viewsets.ModelViewSet):
 
         # Return the default serializer (TopicDetailSerializer)
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        """
+        Create a new topic.
+        https://www.django-rest-framework.org/api-guide/generic-views/#get_serializer_classself:~:text=Save%20and%20deletion%20hooks%3A
+        """
+
+        # Set the user to the authenticated user
+        serializer.save(user=self.request.user)
