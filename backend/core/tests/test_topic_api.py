@@ -7,10 +7,17 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from core.tests.helpers import create_user, create_topic
+from core.tests.helpers import (
+    create_user,
+    create_topic,
+    create_topic_url
+)
 from core.models import Topic
 
-from topic.serializers import TopicSerializer
+from topic.serializers import (
+    TopicSerializer,
+    TopicDetailSerializer
+)
 
 # Topic API URL endpoint constants
 TOPICS_URL = reverse('topic:topic-list')
@@ -115,4 +122,24 @@ class PrivateTopicApiTests(TestCase):
         self.assertEqual(len(response.data), 1)
         # Test that the topics in the response match
         # the serialized topics from the database
+        self.assertEqual(response.data, serializer.data)
+
+    def test_get_topic_detail_success(self):
+        """
+        Test retrieving a singular topic detail is successful.
+        """
+
+        # Create a test topic for the user
+        topic = create_topic(user=self.user)
+        # URL for the topic, passing in the topic id
+        url = create_topic_url(topic.id)
+        # Retrieve the topic for the authenticated user
+        response = self.client.get(url)
+        # Serialize the topic retrieved from the database
+        serializer = TopicDetailSerializer(topic)
+
+        # Test that the topic request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that the topic in the response matches
+        # the serialized topic from the database
         self.assertEqual(response.data, serializer.data)

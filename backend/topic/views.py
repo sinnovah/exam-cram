@@ -15,8 +15,8 @@ class TopicViewSet(viewsets.ModelViewSet):
     """
     # Extends DRF's ModelViewSet.
 
-    # Set DRF's serializer class to the custom topic serializer
-    serializer_class = serializers.TopicSerializer
+    # Set DRF's serializer class to the custom topic detail serializer
+    serializer_class = serializers.TopicDetailSerializer
     # Set the queryset to all the topic objects
     queryset = Topic.objects.all()
     # Set the authentication for the viewset to token authentication
@@ -32,3 +32,16 @@ class TopicViewSet(viewsets.ModelViewSet):
         # Return the topics for the authenticated user
         # Ordered by most recently created
         return self.queryset.filter(user=self.request.user).order_by('-id')
+
+    def get_serializer_class(self):
+        """
+        Return the appropriate serializer class.
+        https://www.django-rest-framework.org/api-guide/generic-views/#get_serializer_classself
+        """
+
+        # Return the list serializer if the action is list
+        if self.action == 'list':
+            return serializers.TopicSerializer
+
+        # Return the default serializer (TopicDetailSerializer)
+        return self.serializer_class
