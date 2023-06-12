@@ -245,7 +245,7 @@ class PrivateTopicApiTests(TestCase):
         # Create another test user
         other_user = create_user(email='other-user@example.com')
         # Payload to try update the topic's user
-        payload = {'user': other_user.id }
+        payload = {'user': other_user.id}
         # URL for the topic, passing in the topic id
         url = topic_details_url(topic.id)
 
@@ -256,3 +256,39 @@ class PrivateTopicApiTests(TestCase):
 
         # Test that the patch topic user request was not successful
         self.assertEqual(topic.user, self.user)
+
+    def test_delete_topic_success(self):
+        """
+        Test deleting a topic is successful.
+        """
+
+        # Create a topic for the user
+        topic = create_topic(user=self.user)
+        # URL for the topic, passing in the topic id
+        url = topic_details_url(topic.id)
+        # Delete the topic
+        response = self.client.delete(url)
+
+        # Test that the delete topic request was successful
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        # Test that the topic was deleted
+        self.assertFalse(Topic.objects.filter(id=topic.id).exists())
+
+    def test_delete_topic_with_different_user_not_allowed(self):
+        """
+        Test that deleting a topic with a different user is not allowed.
+        """
+
+        # Create another test user
+        other_user = create_user(email='other-user@example.com')
+        # Create a topic for the other user
+        topic = create_topic(user=other_user)
+        # URL for the topic, passing in the topic id
+        url = topic_details_url(topic.id)
+        # Try delete the other user's topic
+        result = self.client.delete(url)
+
+        # Test that the delete topic request was not successful
+        self.assertEqual(result.status_code, status.HTTP_404_NOT_FOUND)
+        # Test that the topic was not deleted
+        self.assertTrue(Topic.objects.filter(id=topic.id).exists())
