@@ -63,3 +63,17 @@ def topic_details_url(topic_id):
 
     # Return the url for the topic detail
     return reverse('topic:topic-detail', args=[topic_id])
+
+
+def create_tag(
+        name='Test Tag',
+        **params):  # Allows for additional parameters to be passed in
+    '''
+    Helper function to create tags for testing.
+    '''
+
+    # Create the tag for the user
+    return models.Tag.objects.create(
+        name=name,
+        **params
+    )
