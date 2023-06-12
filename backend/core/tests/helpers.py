@@ -56,9 +56,9 @@ def create_topic(
     )
 
 
-def create_topic_url(topic_id):
+def topic_details_url(topic_id):
     '''
-    Helper function to create topic detail urls for testing.
+    Helper function returns topic detail urls for testing.
     '''
 
     # Return the url for the topic detail
