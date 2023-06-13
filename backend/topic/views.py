@@ -60,6 +60,7 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 
 class BaseTopicAttrViewSet(
+        mixins.UpdateModelMixin,
         mixins.ListModelMixin,
         viewsets.GenericViewSet):
     """
