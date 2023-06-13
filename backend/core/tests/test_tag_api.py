@@ -141,3 +141,24 @@ class PrivateTopicApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Test that the tag name has been patched
         self.assertEqual(tag.name, payload['name'])
+
+    def test_delete_tag_success(self):
+        """
+        Test deleting a tag is successful.
+        """
+
+        # Create a test tag for the user
+        tag = create_tag(user=self.user)
+        # URL for the tag, passing in the tag id
+        url = tag_details_url(tag.id)
+        # Delete the tag
+        response = self.client.delete(url)
+
+        # Test that the delete request was successful
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Retrieve tags for the authenticated user from the database
+        tags = Tag.objects.filter(user=self.user)
+
+        # Test that the tag has been deleted (does not exist)
+        self.assertFalse(tags.exists())
