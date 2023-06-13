@@ -3,7 +3,10 @@ Serializers for the topic API.
 """
 from rest_framework import serializers
 
-from core.models import Topic
+from core.models import (
+    Topic,
+    Tag
+)
 
 
 class TopicSerializer(serializers.ModelSerializer):
@@ -36,3 +39,19 @@ class TopicDetailSerializer(TopicSerializer):
 
         # Add additional fields to the topic detail method
         fields = TopicSerializer.Meta.fields + ['notes']
+
+
+class TagSerializer(serializers.ModelSerializer):
+    """
+    Tag object.
+    """
+
+    class Meta:
+        """Meta class allows for validation rules for the data"""
+
+        # Associate the serializer with the tag model
+        model = Tag
+        # Fields to include in the tag API
+        fields = ['id', 'name']
+        # Make the id field read only
+        read_only_fields = ['id']
