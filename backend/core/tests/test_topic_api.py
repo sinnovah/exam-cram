@@ -19,7 +19,7 @@ from topic.serializers import (
     TopicDetailSerializer
 )
 
-# Topic API URL endpoint constants
+# Topic list endpoint constant
 TOPICS_URL = reverse('topic:topic-list')
 
 
