@@ -9,9 +9,10 @@ from topic import views
 
 # Create a router for the topic API
 router = DefaultRouter()
-# Register the topic viewset with the router. Automatically
+# Register the viewsets with the router. Automatically
 # assigns GET, POST, PUT, PATCH, and DELETE methods
 router.register('topics', views.TopicViewSet)
+router.register('tags', views.TagViewSet)
 
 # App name for the topic API
 app_name = 'topic'

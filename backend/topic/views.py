@@ -1,11 +1,14 @@
 """
 Topic API views.
 """
-from rest_framework import viewsets
+from rest_framework import (
+    viewsets,
+    mixins
+)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Topic
+from core.models import Topic, Tag
 from topic import serializers
 
 
@@ -54,3 +57,38 @@ class TopicViewSet(viewsets.ModelViewSet):
 
         # Set the user to the authenticated user
         serializer.save(user=self.request.user)
+
+
+class BaseTopicAttrViewSet(
+        mixins.ListModelMixin,
+        viewsets.GenericViewSet):
+    """
+    Base reusable ViewSet for topic attributes
+    (Objects with relationships to topics).
+    """
+    # Extends DRF's GenericViewSet and mixins.
+
+    # Set the authentication for the viewsets to token authentication
+    authentication_classes = [TokenAuthentication]
+    # Must be authenticated to use the viewsets
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Return objects for the current authenticated user only"""
+
+        # Return the queryset filtered by the authenticated user
+        return self.queryset.filter(
+            user=self.request.user
+        ).order_by('name')  # Order alphabetically by name
+
+
+class TagViewSet(BaseTopicAttrViewSet):
+    """
+    Manage tags.
+    """
+    # Extends BaseTopicAttrViewSet.
+
+    # Set DRF's serializer class to the custom tag serializer
+    serializer_class = serializers.TagSerializer
+    # Set the queryset to all the tag objects
+    queryset = Tag.objects.all()
