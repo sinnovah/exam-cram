@@ -56,15 +56,6 @@ def create_topic(
     )
 
 
-def topic_details_url(topic_id):
-    '''
-    Helper function returns topic detail urls for testing.
-    '''
-
-    # Return the url for the topic detail
-    return reverse('topic:topic-detail', args=[topic_id])
-
-
 def create_tag(user, name='Test Tag'):
     '''
     Helper function to create tags for testing.
@@ -75,3 +66,21 @@ def create_tag(user, name='Test Tag'):
         user=user,
         name=name
     )
+
+
+def topic_details_url(topic_id):
+    '''
+    Helper function returns topic detail urls for testing.
+    '''
+
+    # Return the url for the topic detail
+    return reverse('topic:topic-detail', args=[topic_id])
+
+
+def tag_details_url(tag_id):
+    '''
+    Helper function returns tag detail urls for testing.
+    '''
+
+    # Return the url for the topic detail
+    return reverse('topic:tag-detail', args=[tag_id])

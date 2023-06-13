@@ -12,7 +12,8 @@ from topic.serializers import TagSerializer
 from core.models import Tag
 from core.tests.helpers import (
     create_user,
-    create_tag
+    create_tag,
+    tag_details_url
 )
 
 
@@ -118,3 +119,25 @@ class PrivateTopicApiTests(TestCase):
         # Test that the tags in the response match
         # the serialized tags from the database
         self.assertEqual(response.data, serializer.data)
+
+    def test_patch_tag_success(self):
+        """
+        Test patching a tag is successful.
+        """
+
+        # Create a test tag for the user
+        tag = create_tag(user=self.user)
+        # Set the new tag name
+        payload = {'name': 'New Tag Name'}
+        # URL for the tag, passing in the tag id
+        url = tag_details_url(tag.id)
+        # Patch the tag
+        response = self.client.patch(url, payload)
+
+        # Refresh the tag from the database
+        tag.refresh_from_db()
+
+        # Test that the patch request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that the tag name has been patched
+        self.assertEqual(tag.name, payload['name'])
