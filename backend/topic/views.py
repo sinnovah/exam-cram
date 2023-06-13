@@ -8,7 +8,7 @@ from rest_framework import (
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Topic
+from core.models import Topic, Tag
 from topic import serializers
 
 
@@ -80,3 +80,15 @@ class BaseTopicAttrViewSet(
         return self.queryset.filter(
             user=self.request.user
         ).order_by('name')  # Order alphabetically by name
+
+
+class TagViewSet(BaseTopicAttrViewSet):
+    """
+    Manage tags.
+    """
+    # Extends BaseTopicAttrViewSet.
+
+    # Set DRF's serializer class to the custom tag serializer
+    serializer_class = serializers.TagSerializer
+    # Set the queryset to all the tag objects
+    queryset = Tag.objects.all()
