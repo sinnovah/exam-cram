@@ -75,8 +75,8 @@ class PrivateTopicApiTests(TestCase):
         # Retrieve the two created tag
         response = self.client.get(TAGS_URL)
         # Retrieve all tags from the database
-        # Ordered by most recently created
-        tags = Tag.objects.all().order_by('-id')
+        # Order by name alphabetically
+        tags = Tag.objects.all().order_by('name')
         # Serialize the tags retrieved from the database
         # Many=True because we are serializing a list of tag objects
         serializer = TagSerializer(tags, many=True)

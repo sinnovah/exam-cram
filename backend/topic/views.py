@@ -64,7 +64,7 @@ class BaseTopicAttrViewSet(
         viewsets.GenericViewSet):
     """
     Base reusable ViewSet for topic attributes
-    (Objects with ManyToMany relationships to topics).
+    (Objects with relationships to topics).
     """
     # Extends DRF's GenericViewSet and mixins.
 
