@@ -9,18 +9,9 @@ from rest_framework import status
 
 from core.tests.helpers import (
     create_user,
-    create_topic,
     create_tag,
-    topic_details_url,
-    tag_details_url
 )
 from core.models import Topic
-
-from topic.serializers import (
-    TopicSerializer,
-    TopicDetailSerializer,
-    TagSerializer
-)
 
 
 # Topic list endpoint constant
