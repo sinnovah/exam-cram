@@ -7,7 +7,8 @@ from core.tests.helpers import (
     create_user,
     create_superuser,
     create_topic,
-    create_tag
+    create_tag,
+    create_resource,
 )
 
 # Default values of create_user and create_superuser helper functions
@@ -21,6 +22,10 @@ TOPIC_NOTES = 'Test notes for my topic'
 
 # Default value of create_tag helper function
 TAG_NAME = 'Test Tag'
+
+# Default values of create_resource helper function
+RESOURCE_NAME = 'Test Resource'
+RESOURCE_LINK = 'https://example.com'
 
 
 class ModelTests(TestCase):
@@ -39,9 +44,9 @@ class ModelTests(TestCase):
         self.assertTrue(user.check_password, PASSWORD)
 
     def test_user_email_normalized(self):
-        '''
-        Test that emails for new users are normalized
-        '''
+        """
+        Test that emails for new users are normalized.
+        """
 
         # List of input emails and expected normalized output emails
         # As per email spec:
@@ -62,7 +67,7 @@ class ModelTests(TestCase):
             self.assertEqual(user.email, output_email)
 
     def test_create_user_with_empty_email_error(self):
-        '''Test that creating a user without an email raises a ValueError'''
+        """Test that creating a user without an email raises a ValueError"""
 
         # Test that a ValueError exception is raised
         with self.assertRaises(ValueError):
@@ -70,7 +75,7 @@ class ModelTests(TestCase):
             create_user(email='')
 
     def test_create_superuser(self):
-        '''Test creating a new superuser'''
+        """Test creating a new superuser"""
 
         # Create the superuser
         superuser = create_superuser()
@@ -111,3 +116,18 @@ class ModelTests(TestCase):
         self.assertEqual(tag.user, user)
         # Test that the string representation of the tag is the name
         self.assertEqual(str(tag), tag.name)
+
+    def test_create_resource_success(self):
+        """Test creating a new resource is successful."""
+
+        # Create a user
+        user = create_user()
+        # Create a resource for the user
+        resource = create_resource(user=user)
+
+        # Test that the resource's name, link and user were created successfully
+        self.assertEqual(resource.name, RESOURCE_NAME)
+        self.assertEqual(resource.link, RESOURCE_LINK)
+        self.assertEqual(resource.user, user)
+        # Test that the string representation of the resource is the name
+        self.assertEqual(str(resource), resource.name)
