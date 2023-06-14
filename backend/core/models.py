@@ -98,6 +98,10 @@ class Topic(models.Model):
     # A topic can have many tags.
     # A tag can have many topics.
     tags = models.ManyToManyField('Tag')
+    # Resources that can be allocated to topics.
+    # A topic can have many resources.
+    # A resource can have many topics.
+    resources = models.ManyToManyField('Resource')
 
     def __str__(self):
         """
@@ -129,6 +133,33 @@ class Tag(models.Model):
         """
         Return the name as a string representation
         of the tag object.
+        """
+
+        return self.name
+
+
+class Resource(models.Model):
+    """
+    Model for the resources that can be allocated to topics.
+    Allows for topic filtering by resources.
+    Extends Django's standard Model.
+    """
+
+    name = models.CharField(max_length=255)
+    # User that the resource belongs to.
+    # A user can have many resources.
+    # A resource must have one user.
+    link = models.URLField(max_length=255)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        # When a user is deleted so are their resources
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        """
+        Return the name as a string representation
+        of the resource object.
         """
 
         return self.name

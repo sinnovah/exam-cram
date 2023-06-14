@@ -68,6 +68,19 @@ def create_tag(user, name='Test Tag'):
     )
 
 
+def create_resource(user, name='Test Resource', link='https://example.com'):
+    '''
+    Helper function to create resources for testing.
+    '''
+
+    # Create the resource for the user
+    return models.Resource.objects.create(
+        user=user,
+        name=name,
+        link=link
+    )
+
+
 def topic_details_url(topic_id):
     '''
     Helper function returns topic detail urls for testing.
