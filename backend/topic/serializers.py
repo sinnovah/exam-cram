@@ -44,20 +44,15 @@ class TopicSerializer(serializers.ModelSerializer):
         # Make the id and last_modified fields read only
         read_only_fields = ['id', 'last_modified']
 
-    def create(self, validated_data):
+    def _get_or_create_tags(self, tags, topic):
         """
-        Override the create method to allow create for nested serializers.
+        Get or create the tags if they do not exist.
         """
 
-        # Remove the tags from the validated data
-        # Assign them to a tags variable
-        tags = validated_data.pop('tags', [])
-        # Create the topic without tags
-        topic = Topic.objects.create(**validated_data)
         # Get the authenticated user
         auth_user = self.context['request'].user
 
-        # Iterate over the popped tags
+        # Iterate over the tags
         for tag in tags:
             # Get or create the tag if it does not exist
             # I.e., if the tag exists with the name and user passed in
@@ -70,8 +65,53 @@ class TopicSerializer(serializers.ModelSerializer):
             # Add the tag to the topic
             topic.tags.add(tag_object)
 
+    def create(self, validated_data):
+        """
+        Override the create method to allow create for nested serializers.
+        """
+
+        # Remove the tags from the validated data
+        # Assign them to a tags variable
+        # If no tags are passed in, set the tags variable to an empty list
+        tags = validated_data.pop('tags', [])
+        # Create the topic without tags
+        topic = Topic.objects.create(**validated_data)
+
+        # Call the _get_or_create_tags method to get
+        # existing tags or create the tags
+        self._get_or_create_tags(tags, topic)
+
         # Return the topic
         return topic
+
+    def update(self, instance, validated_data):
+        """
+        Override the update method to allow update for nested serializers.
+        """
+
+        # Remove the tags from the validated data
+        # Assign them to a tags variable
+        # If no tags are passed in, set the tags variable to None
+        tags = validated_data.pop('tags', None)
+
+        # If tags were passed in
+        if tags is not None:
+
+            # Clear the existing tags
+            instance.tags.clear()
+
+            # Call the _get_or_create_tags method to get
+            # existing tags or create the tags
+            self._get_or_create_tags(tags, instance)
+
+        # Update the topic fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        # Save the topic instance
+        instance.save()
+        # Return the topic
+        return instance
 
 
 class TopicDetailSerializer(TopicSerializer):
