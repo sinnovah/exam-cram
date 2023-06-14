@@ -125,7 +125,8 @@ class ModelTests(TestCase):
         # Create a resource for the user
         resource = create_resource(user=user)
 
-        # Test that the resource's name, link and user were created successfully
+        # Test that the resource's name, link, and user
+        # were created successfully
         self.assertEqual(resource.name, RESOURCE_NAME)
         self.assertEqual(resource.link, RESOURCE_LINK)
         self.assertEqual(resource.user, user)
