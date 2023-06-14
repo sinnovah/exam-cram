@@ -44,6 +44,35 @@ class TopicSerializer(serializers.ModelSerializer):
         # Make the id and last_modified fields read only
         read_only_fields = ['id', 'last_modified']
 
+    def create(self, validated_data):
+        """
+        Override the create method to allow create for nested serializers.
+        """
+
+        # Remove the tags from the validated data
+        # Assign them to a tags variable
+        tags = validated_data.pop('tags', [])
+        # Create the topic without tags
+        topic = Topic.objects.create(**validated_data)
+        # Get the authenticated user
+        auth_user = self.context['request'].user
+
+        # Iterate over the popped tags
+        for tag in tags:
+            # Get or create the tag if it does not exist
+            # I.e., if the tag exists with the name and user passed in
+            # arguments, get it, else create it avoiding duplicate tags.
+            # **tag param allows for adding additional tag fields in the future
+            tag_object, created = Tag.objects.get_or_create(
+                user=auth_user,
+                **tag
+            )
+            # Add the tag to the topic
+            topic.tags.add(tag_object)
+
+        # Return the topic
+        return topic
+
 
 class TopicDetailSerializer(TopicSerializer):
     """
