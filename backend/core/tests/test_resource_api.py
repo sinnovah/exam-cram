@@ -138,3 +138,24 @@ class PrivateResourceApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Test that the resource name has been patched
         self.assertEqual(resource.name, payload['name'])
+
+    def test_delete_resource_success(self):
+        """
+        Test deleting a resource is successful.
+        """
+
+        # Create a test resource for the user
+        resource = create_resource(user=self.user)
+        # URL for the resource, passing in the resource id
+        url = resource_details_url(resource.id)
+        # Delete the resource
+        response = self.client.delete(url)
+
+        # Test that the delete request was successful
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Retrieve the resource from the database
+        resource = Resource.objects.filter(user=self.user, id=resource.id)
+
+        # Test that the resource has been deleted
+        self.assertFalse(resource.exists())
