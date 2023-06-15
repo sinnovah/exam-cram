@@ -8,6 +8,7 @@ from django.contrib.auth.models import (
     PermissionsMixin
 )
 from django.conf import settings
+from django.core.validators import URLValidator
 
 
 class UserManager(BaseUserManager):
@@ -119,6 +120,7 @@ class Tag(models.Model):
     Extends Django's standard Model.
     """
 
+    # Name of the tag
     name = models.CharField(max_length=255)
     # User that the tag belongs to.
     # A user can have many tags.
@@ -145,11 +147,17 @@ class Resource(models.Model):
     Extends Django's standard Model.
     """
 
+    # Name of the resource
     name = models.CharField(max_length=255)
+    # URL for the resource
+    # URLValidator ensures that the URL is a valid http or https URL
+    link = models.URLField(
+        max_length=255,
+        validators=[URLValidator(schemes=['http', 'https'])]
+    )
     # User that the resource belongs to.
     # A user can have many resources.
     # A resource must have one user.
-    link = models.URLField(max_length=255)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         # When a user is deleted so are their resources

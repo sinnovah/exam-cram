@@ -97,3 +97,12 @@ def tag_details_url(tag_id):
 
     # Return the url for the topic detail
     return reverse('topic:tag-detail', args=[tag_id])
+
+
+def resource_details_url(tag_id):
+    '''
+    Helper function returns resource detail urls for testing.
+    '''
+
+    # Return the url for the topic detail
+    return reverse('topic:resource-detail', args=[tag_id])

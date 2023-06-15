@@ -5,7 +5,8 @@ from rest_framework import serializers
 
 from core.models import (
     Topic,
-    Tag
+    Tag,
+    Resource
 )
 
 
@@ -25,14 +26,34 @@ class TagSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
+class ResourceSerializer(serializers.ModelSerializer):
+    """
+    Resource object.
+    """
+
+    class Meta:
+        """Meta class allows for validation rules for the data"""
+
+        # Associate the serializer with the resource model
+        model = Resource
+        # Fields to include in the resource API
+        fields = ['id', 'name', 'link']
+        # Make the id field read only
+        read_only_fields = ['id']
+
+
 class TopicSerializer(serializers.ModelSerializer):
     """
     Topic object.
     """
 
-    # List of tags (many=True) have a nested
+    # List of tags (many=True) they have a nested
     # relationship to topic they are optional
     tags = TagSerializer(many=True, required=False)
+
+    # List of resources (many=True) they have a nested
+    # relationship to topic they are optional
+    resources = ResourceSerializer(many=True, required=False)
 
     class Meta:
         """Meta class allows for validation rules for the data"""
@@ -40,7 +61,7 @@ class TopicSerializer(serializers.ModelSerializer):
         # Associate the serializer with the topic model
         model = Topic
         # Fields to include in the topic API
-        fields = ['id', 'title', 'last_modified', 'tags']
+        fields = ['id', 'title', 'last_modified', 'tags', 'resources']
         # Make the id and last_modified fields read only
         read_only_fields = ['id', 'last_modified']
 
