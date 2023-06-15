@@ -86,6 +86,28 @@ class TopicSerializer(serializers.ModelSerializer):
             # Add the tag to the topic
             topic.tags.add(tag_object)
 
+    def _get_or_create_resources(self, resources, topic):
+        """
+        Get or create the resources if they do not exist.
+        """
+
+        # Get the authenticated user
+        auth_user = self.context['request'].user
+
+        # Iterate over the resources
+        for resource in resources:
+            # Get or create the resource if it does not exist
+            # I.e., if the resource exists with the name and user passed in
+            # arguments, get it, else create it avoiding duplicate resources.
+            # **resource param allows for adding additional resource fields
+            # in the future
+            resource_object, created = Resource.objects.get_or_create(
+                user=auth_user,
+                **resource
+            )
+            # Add the resource to the topic
+            topic.resources.add(resource_object)
+
     def create(self, validated_data):
         """
         Override the create method to allow create for nested serializers.
@@ -95,12 +117,20 @@ class TopicSerializer(serializers.ModelSerializer):
         # Assign them to a tags variable
         # If no tags are passed in, set the tags variable to an empty list
         tags = validated_data.pop('tags', [])
-        # Create the topic without tags
+        # Remove the resources from the validated data
+        # Assign them to a resources variable
+        # If no resources are passed in,
+        # set the resources variable to an empty list
+        resources = validated_data.pop('resources', [])
+        # Create the topic without the additional attributes
         topic = Topic.objects.create(**validated_data)
 
         # Call the _get_or_create_tags method to get
         # existing tags or create the tags
         self._get_or_create_tags(tags, topic)
+        # Call the _get_or_create_resources method to get
+        # existing resources or create the resources
+        self._get_or_create_resources(resources, topic)
 
         # Return the topic
         return topic
