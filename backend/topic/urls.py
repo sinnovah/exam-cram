@@ -13,6 +13,7 @@ router = DefaultRouter()
 # assigns GET, POST, PUT, PATCH, and DELETE methods
 router.register('topics', views.TopicViewSet)
 router.register('tags', views.TagViewSet)
+router.register('resources', views.ResourceViewSet)
 
 # App name for the topic API
 app_name = 'topic'
