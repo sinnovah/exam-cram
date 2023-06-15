@@ -25,6 +25,7 @@ class TagSerializer(serializers.ModelSerializer):
         # Make the id field read only
         read_only_fields = ['id']
 
+
 class ResourceSerializer(serializers.ModelSerializer):
     """
     Resource object.
