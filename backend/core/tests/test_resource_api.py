@@ -13,6 +13,7 @@ from core.models import Resource
 from core.tests.helpers import (
     create_user,
     create_resource,
+    resource_details_url
 )
 
 
@@ -115,3 +116,25 @@ class PrivateResourceApiTests(TestCase):
         self.assertEqual(response.data[0]['name'], resource.name)
         self.assertEqual(response.data[0]['link'], resource.link)
         self.assertEqual(response.data[0]['id'], resource.id)
+
+    def test_patch_resource_success(self):
+        """
+        Test patching a resource is successful.
+        """
+
+        # Create a test resource for the user
+        resource = create_resource(user=self.user)
+        # Set the new resource name
+        payload = {'name': 'New Resource Name'}
+        # URL for the resource, passing in the resource id
+        url = resource_details_url(resource.id)
+        # Patch the resource
+        response = self.client.patch(url, payload)
+
+        # Retrieve the updated resource from the database
+        resource.refresh_from_db()
+
+        # Test that the patch request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that the resource name has been patched
+        self.assertEqual(resource.name, payload['name'])
