@@ -12,7 +12,8 @@ from topic.serializers import QuestionSerializer
 from core.models import Question
 from core.tests.helpers import (
     create_user,
-    create_question
+    create_question,
+    question_details_url
 )
 
 
@@ -114,3 +115,25 @@ class PrivateQuestionApiTests(TestCase):
         self.assertEqual(len(response.data), 1)
         # Test that the question in the response match the database
         self.assertEqual(response.data, serializer.data)
+
+    def test_patch_question_success(self):
+        """
+        Test updating a question with PATCH is successful.
+        """
+
+        # Create a question for the user
+        question = create_question(user=self.user)
+        # Create a new question name
+        payload = {'name': 'New Question Name'}
+        # URL for the question details
+        url = question_details_url(question.id)
+        # Update the question with PATCH
+        response = self.client.patch(url, payload)
+
+        # Refresh the question from the database
+        question.refresh_from_db()
+
+        # Test that the request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that the question was updated successfully
+        self.assertEqual(question.name, payload['name'])
