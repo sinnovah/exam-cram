@@ -10,8 +10,10 @@ from rest_framework import status
 from core.tests.helpers import (
     create_user,
     create_question,
+    create_topic,
+    topic_details_url
 )
-from core.models import Topic
+from core.models import Topic, Question
 
 
 # Topic list endpoint constant
@@ -105,3 +107,94 @@ class PrivateTopicQuestionsApiTests(TestCase):
                     wrong_answers=questions['wrong_answers']
                 ).exists()
             )
+
+    def test_create_question_on_topic_patch(self):
+        """
+        Test creating a new question when patching a topic.
+        """
+
+        # Create a topic
+        topic = create_topic(user=self.user)
+        # Create a payload with a different question name
+        payload = {'questions': [{'name': 'Different Question'}]}
+        # Get the topic details url
+        url = topic_details_url(topic.id)
+        # Patch the topic with the payload
+        response = self.client.patch(url, payload, format='json')
+
+        # Check that the request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check that the topic has one question
+        self.assertEqual(topic.questions.count(), 1)
+
+        # Get the new question from the database
+        new_question = Question.objects.get(name='Different Question')
+
+        # Check that the new question is in the topic
+        self.assertIn(new_question, topic.questions.all())
+
+    def test_patch_topic_by_assigning_existing_question(self):
+        """
+        Test patching a topic by assigning an existing question.
+        """
+
+        # Create an original question
+        original_question = create_question(user=self.user)
+        # Create a topic
+        topic = create_topic(user=self.user)
+
+        # Add the original question to the topic
+        topic.questions.add(original_question)
+
+        # Create a different question
+        different_question = create_question(
+            user=self.user, name='Different Question'
+        )
+        # Create a payload with the different question's name
+        # to change the topic's question to the different question
+        payload = {'questions': [{
+            'name': 'Different Question',
+            'answer': 'Test Answer',
+            'wrong_answers': [
+                'Test Wrong Answer 1',
+                'Test Wrong Answer 2'
+                ]
+        }]}
+        # Get the topic details url
+        url = topic_details_url(topic.id)
+        # Patch the topic with the payload
+        response = self.client.patch(url, payload, format='json')
+
+        # Check that the request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check that the topic has one question
+        self.assertEqual(topic.questions.count(), 1)
+        # Check that the different question is in the topic
+        self.assertIn(different_question, topic.questions.all())
+        # Check that the original question is not in the topic
+        # because it has been replaced by the different question
+        self.assertNotIn(original_question, topic.questions.all())
+
+    def test_clear_topic_questions(self):
+        """
+        Test clearing a topic's questions.
+        """
+
+        # Create a topic
+        topic = create_topic(user=self.user)
+        # Create a question
+        question = create_question(user=self.user)
+        # Add the question to the topic
+        topic.questions.add(question)
+
+        # Create a payload with an empty list of questions
+        payload = {'questions': []}
+        # Get the topic details url
+        url = topic_details_url(topic.id)
+        # Patch the topic with the payload
+        response = self.client.patch(url, payload, format='json')
+
+        # Check that the request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check that the topic has no questions
+        self.assertEqual(topic.questions.count(), 0)
