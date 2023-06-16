@@ -31,6 +31,7 @@ RESOURCE_LINK = 'https://example.com'
 # Default value of create_question helper function
 QUESTION_NAME = 'Test Question'
 QUESTION_ANSWER = 'Test Answer'
+WRONG_ANSWERS = ['Test Wrong Answer 1', 'Test Wrong Answer 2']
 
 
 class ModelTests(TestCase):
@@ -146,10 +147,11 @@ class ModelTests(TestCase):
         # Create a question for the user
         question = create_question(user=user)
 
-        # Test that the question's name, answer, and user
-        # were created successfully
+        # Test that the question's name, answer, wrong answers,
+        # and user were created successfully
         self.assertEqual(question.name, QUESTION_NAME)
         self.assertEqual(question.answer, QUESTION_ANSWER)
+        self.assertEqual(question.wrong_answers, WRONG_ANSWERS)
         self.assertEqual(question.user, user)
         # Test that the string representation of the question is the name
         self.assertEqual(str(question), question.name)

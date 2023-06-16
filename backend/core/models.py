@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
 )
 from django.conf import settings
 from django.core.validators import URLValidator
+from django.contrib.postgres.fields import ArrayField
 
 
 class UserManager(BaseUserManager):
@@ -188,6 +189,11 @@ class Question(models.Model):
     name = models.CharField(max_length=255)
     # Answer to the question
     answer = models.CharField(max_length=255)
+    # Wrong answers to the question
+    wrong_answers = ArrayField(
+        models.CharField(max_length=255),
+        default=list
+    )
     # User that the question belongs to.
     # A user can have many questions.
     # A question must have one user.

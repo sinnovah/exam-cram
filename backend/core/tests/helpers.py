@@ -85,6 +85,7 @@ def create_question(
         user,
         name='Test Question',
         answer='Test Answer',
+        wrong_answers=['Test Wrong Answer 1', 'Test Wrong Answer 2'],
         **params):  # Allows for additional parameters to be passed in
     """
     Helper function to create resources for testing.
@@ -95,6 +96,7 @@ def create_question(
         user=user,
         name=name,
         answer=answer,
+        wrong_answers=wrong_answers,
         **params
     )
 
