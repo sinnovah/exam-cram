@@ -14,6 +14,7 @@ router = DefaultRouter()
 router.register('topics', views.TopicViewSet)
 router.register('tags', views.TagViewSet)
 router.register('resources', views.ResourceViewSet)
+router.register('questions', views.QuestionViewSet)
 
 # App name for the topic API
 app_name = 'topic'
