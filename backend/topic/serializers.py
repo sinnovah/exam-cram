@@ -144,6 +144,10 @@ class TopicSerializer(serializers.ModelSerializer):
         # Assign them to a tags variable
         # If no tags are passed in, set the tags variable to None
         tags = validated_data.pop('tags', None)
+        # Remove the resources from the validated data
+        # Assign them to a resources variable
+        # If no resources are passed in, set the resources variable to None
+        resources = validated_data.pop('resources', None)
 
         # If tags were passed in
         if tags is not None:
@@ -154,6 +158,16 @@ class TopicSerializer(serializers.ModelSerializer):
             # Call the _get_or_create_tags method to get
             # existing tags or create the tags
             self._get_or_create_tags(tags, instance)
+
+        # If resources were passed in
+        if resources is not None:
+
+            # Clear the existing resources
+            instance.resources.clear()
+
+            # Call the _get_or_create_resources method to get
+            # existing resources or create the resources
+            self._get_or_create_resources(resources, instance)
 
         # Update the topic fields
         for attr, value in validated_data.items():
