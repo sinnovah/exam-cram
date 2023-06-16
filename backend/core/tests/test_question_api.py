@@ -75,7 +75,7 @@ class PrivateQuestionApiTests(TestCase):
         response = self.client.get(QUESTIONS_URL)
         # Get the questions from the database
         # Ordered by most recently created
-        questions = Question.objects.all().order_by('name')
+        questions = Question.objects.all().order_by('id')
         # Serialize the questions from the database
         # Many=True because we are serializing a list
         serializer = QuestionSerializer(questions, many=True)
