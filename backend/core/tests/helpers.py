@@ -14,9 +14,9 @@ def create_user(
         password='ThirtyHairyHippos896',
         first_name='Test',
         last_name='User'):
-    '''
+    """
     Helper function to create users for testing.
-    '''
+    """
 
     # Create the user
     return get_user_model().objects.create_user(
@@ -29,9 +29,9 @@ def create_user(
 def create_superuser(
         email='superuser@example.com',
         password='ThirtyHairyHippos896',):
-    '''
+    """
     Helper function to create superusers for testing.
-    '''
+    """
 
     # Create the superuser
     return get_user_model().objects.create_superuser(
@@ -44,9 +44,9 @@ def create_topic(
         title='Test Topic',
         notes='Test notes for my topic',
         **params):  # Allows for additional parameters to be passed in
-    '''
+    """
     Helper function to create topics for testing.
-    '''
+    """
 
     # Create the topic for the user
     return models.Topic.objects.create(
@@ -57,9 +57,9 @@ def create_topic(
 
 
 def create_tag(user, name='Test Tag'):
-    '''
+    """
     Helper function to create tags for testing.
-    '''
+    """
 
     # Create the tag for the user
     return models.Tag.objects.create(
@@ -69,15 +69,33 @@ def create_tag(user, name='Test Tag'):
 
 
 def create_resource(user, name='Test Resource', link='https://example.com'):
-    '''
+    """
     Helper function to create resources for testing.
-    '''
+    """
 
     # Create the resource for the user
     return models.Resource.objects.create(
         user=user,
         name=name,
         link=link
+    )
+
+
+def create_question(
+        user,
+        name='Test Question',
+        answer='Test Answer',
+        **params):  # Allows for additional parameters to be passed in
+    """
+    Helper function to create resources for testing.
+    """
+
+    # Create the question for the user
+    return models.Question.objects.create(
+        user=user,
+        name=name,
+        answer=answer,
+        **params
     )
 
 
@@ -99,10 +117,19 @@ def tag_details_url(tag_id):
     return reverse('topic:tag-detail', args=[tag_id])
 
 
-def resource_details_url(tag_id):
+def resource_details_url(resource_id):
     '''
     Helper function returns resource detail urls for testing.
     '''
 
     # Return the url for the topic detail
-    return reverse('topic:resource-detail', args=[tag_id])
+    return reverse('topic:resource-detail', args=[resource_id])
+
+
+def question_details_url(question_id):
+    '''
+    Helper function returns question detail urls for testing.
+    '''
+
+    # Return the url for the topic detail
+    return reverse('topic:question-detail', args=[question_id])
