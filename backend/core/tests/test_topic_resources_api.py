@@ -10,8 +10,10 @@ from rest_framework import status
 from core.tests.helpers import (
     create_user,
     create_resource,
+    create_topic,
+    topic_details_url
 )
-from core.models import Topic
+from core.models import Topic, Resource
 
 
 # Topic list endpoint constant
@@ -89,3 +91,87 @@ class PrivateTopicResourcesApiTests(TestCase):
                     link=resource['link']
                 ).exists()
             )
+
+    def test_create_resource_on_topic_patch(self):
+        """
+        Test creating a new resource when patching a topic.
+        """
+
+        # Create a topic
+        topic = create_topic(user=self.user)
+        # Create a payload with a different resource name
+        payload = {'resources': [{'name': 'Different Resource'}]}
+        # Get the topic details url
+        url = topic_details_url(topic.id)
+        # Update the topic details with the different resource payload
+        result = self.client.patch(url, payload, format='json')
+
+        # Check that the request was successful
+        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        # Check that the topic has one resource
+        self.assertEqual(topic.resources.count(), 1)
+
+        # Get the new resource from the database
+        new_resource = Resource.objects.get(name='Different Resource')
+
+        # Check that the topic has the new resource
+        self.assertIn(new_resource, topic.resources.all())
+
+    def test_patch_topic_by_assigning_existing_resource(self):
+        """
+        Test patching a topic by assigning existing resources.
+        """
+
+        # Create an original resource
+        original_resource = create_resource(user=self.user)
+        # Create a topic
+        topic = create_topic(user=self.user)
+
+        # Add the original_resource to the topic
+        topic.resources.add(original_resource)
+
+        # Create a different resource
+        different_resource = create_resource(
+            user=self.user, name='Different Resource'
+        )
+        # Create a payload with the existing resource's name
+        # to change the topic's resource to the different resource
+        payload = {'resources': [{'name': 'Different Resource'}]}
+        # Get the topic details url
+        url = topic_details_url(topic.id)
+        # Update the topic details with the different resource from the payload
+        result = self.client.patch(url, payload, format='json')
+
+        # Check that the request was successful
+        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        # Check that the topic has one resource
+        self.assertEqual(topic.resources.count(), 1)
+        # Check that the topic has the different resource
+        self.assertIn(different_resource, topic.resources.all())
+        # Check that the topic does not have the original resource
+        # because it has been replaced by the different resource
+        self.assertNotIn(original_resource, topic.resources.all())
+
+    def test_clear_topic_resources(self):
+        """
+        Test clearing a topic's resources.
+        """
+
+        # Create a topic
+        topic = create_topic(user=self.user)
+        # Create a resource
+        resource = create_resource(user=self.user)
+        # Add the resource to the topic
+        topic.resources.add(resource)
+
+        # Create a payload with no resources
+        payload = {'resources': []}
+        # Get the topic details url
+        url = topic_details_url(topic.id)
+        # Update the topic details with the payload
+        result = self.client.patch(url, payload, format='json')
+
+        # Check that the request was successful
+        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        # Check that the topic has no resources
+        self.assertEqual(topic.resources.count(), 0)
