@@ -72,13 +72,22 @@ class TopicSerializer(serializers.ModelSerializer):
     # relationship to topic they are optional
     resources = ResourceSerializer(many=True, required=False)
 
+    # List of questions (many=True) they have a nested
+    # relationship to topic they are optional
+    questions = QuestionSerializer(many=True, required=False)
+
     class Meta:
         """Meta class allows for validation rules for the data"""
 
         # Associate the serializer with the topic model
         model = Topic
         # Fields to include in the topic API
-        fields = ['id', 'title', 'last_modified', 'tags', 'resources']
+        fields = ['id',
+                  'title',
+                  'last_modified',
+                  'tags',
+                  'resources',
+                  'questions']
         # Make the id and last_modified fields read only
         read_only_fields = ['id', 'last_modified']
 
@@ -125,6 +134,28 @@ class TopicSerializer(serializers.ModelSerializer):
             # Add the resource to the topic
             topic.resources.add(resource_object)
 
+    def _get_or_create_questions(self, questions, topic):
+        """
+        Get or create the questions if they do not exist.
+        """
+
+        # Get the authenticated user
+        auth_user = self.context['request'].user
+
+        # Iterate over the questions
+        for question in questions:
+            # Get or create the question if it does not exist
+            # I.e., if the question exists with the name and user passed in
+            # arguments, get it, else create it avoiding duplicate questions.
+            # **question param allows for adding additional question fields
+            # in the future
+            question_object, created = Question.objects.get_or_create(
+                user=auth_user,
+                **question
+            )
+            # Add the question to the topic
+            topic.questions.add(question_object)
+
     def create(self, validated_data):
         """
         Override the create method to allow create for nested serializers.
@@ -139,6 +170,11 @@ class TopicSerializer(serializers.ModelSerializer):
         # If no resources are passed in,
         # set the resources variable to an empty list
         resources = validated_data.pop('resources', [])
+        # Remove the questions from the validated data
+        # Assign them to a questions variable
+        # If no questions are passed in,
+        # set the questions variable to an empty list
+        questions = validated_data.pop('questions', [])
         # Create the topic without the additional attributes
         topic = Topic.objects.create(**validated_data)
 
@@ -148,6 +184,9 @@ class TopicSerializer(serializers.ModelSerializer):
         # Call the _get_or_create_resources method to get
         # existing resources or create the resources
         self._get_or_create_resources(resources, topic)
+        # Call the _get_or_create_questions method to get
+        # existing questions or create the questions
+        self._get_or_create_questions(questions, topic)
 
         # Return the topic
         return topic

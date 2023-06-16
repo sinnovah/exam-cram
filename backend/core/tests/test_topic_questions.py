@@ -24,7 +24,7 @@ class PrivateTopicQuestionsApiTests(TestCase):
     Authenticated requests.
     """
 
-    def setup(self):
+    def setUp(self):
         """Set up the test suite."""
 
         # Create a test client to make test http requests
@@ -64,8 +64,13 @@ class PrivateTopicQuestionsApiTests(TestCase):
         # Create an existing question
         existing_question = create_question(
             user=self.user,
-            name='Payload Question'
-        )
+            name='Payload Question',
+            answer='Payload Answer',
+            wrong_answers=[
+                'Payload Wrong Answer',
+                'Payload Second Wrong Answer']
+            )
+
         # Post the payload with the same question name as the existing question
         response = self.client.post(TOPICS_URL, self.payload, format='json')
 
