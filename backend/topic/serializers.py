@@ -6,7 +6,8 @@ from rest_framework import serializers
 from core.models import (
     Topic,
     Tag,
-    Resource
+    Resource,
+    Question
 )
 
 
@@ -38,6 +39,22 @@ class ResourceSerializer(serializers.ModelSerializer):
         model = Resource
         # Fields to include in the resource API
         fields = ['id', 'name', 'link']
+        # Make the id field read only
+        read_only_fields = ['id']
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    """
+    Question object.
+    """
+
+    class Meta:
+        """Meta class allows for validation rules for the data"""
+
+        # Associate the serializer with the question model
+        model = Question
+        # Fields to include in the question API
+        fields = ['id', 'name', 'answer', 'wrong_answers']
         # Make the id field read only
         read_only_fields = ['id']
 
