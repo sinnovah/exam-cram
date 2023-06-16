@@ -137,3 +137,24 @@ class PrivateQuestionApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Test that the question was updated successfully
         self.assertEqual(question.name, payload['name'])
+
+    def test_delete_question_success(self):
+        """
+        Test deleting a question is successful.
+        """
+
+        # Create a question for the user
+        question = create_question(user=self.user)
+        # URL for the question details
+        url = question_details_url(question.id)
+        # Delete the question
+        response = self.client.delete(url)
+
+        # Test that the request was successful
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Get the questions for the authenticated user from the database
+        questions = Question.objects.filter(user=self.user)
+
+        # Test that the question was deleted successfully
+        self.assertFalse(questions.exists())
