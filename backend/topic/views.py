@@ -8,7 +8,7 @@ from rest_framework import (
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Topic, Tag, Resource
+from core.models import Topic, Tag, Resource, Question
 from topic import serializers
 
 
@@ -81,7 +81,7 @@ class BaseTopicAttrViewSet(
         # Return the queryset filtered by the authenticated user
         return self.queryset.filter(
             user=self.request.user
-        ).order_by('name')  # Order alphabetically by name
+        )
 
 
 class TagViewSet(BaseTopicAttrViewSet):
@@ -93,7 +93,7 @@ class TagViewSet(BaseTopicAttrViewSet):
     # Set DRF's serializer class to the custom tag serializer
     serializer_class = serializers.TagSerializer
     # Set the queryset to all the tag objects
-    queryset = Tag.objects.all()
+    queryset = Tag.objects.all().order_by('name')
 
 
 class ResourceViewSet(BaseTopicAttrViewSet):
@@ -105,4 +105,16 @@ class ResourceViewSet(BaseTopicAttrViewSet):
     # Set DRF's serializer class to the custom resource serializer
     serializer_class = serializers.ResourceSerializer
     # Set the queryset to all the resource objects
-    queryset = Resource.objects.all()
+    queryset = Resource.objects.all().order_by('name')
+
+
+class QuestionViewSet(BaseTopicAttrViewSet):
+    """
+    Manage questions.
+    """
+    # Extends BaseTopicAttrViewSet.
+
+    # Set DRF's serializer class to the custom question serializer
+    serializer_class = serializers.QuestionSerializer
+    # Set the queryset to all the question objects
+    queryset = Question.objects.all().order_by('id')
