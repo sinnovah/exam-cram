@@ -52,10 +52,10 @@ class PrivateTopicTagsApiTests(TestCase):
         # Create an existing tag
         existing_tag = create_tag(user=self.user, name='Test Tag')
         # Post the payload with the same tag name as the existing tag
-        result = self.client.post(TOPICS_URL, self.payload, format='json')
+        response = self.client.post(TOPICS_URL, self.payload, format='json')
 
         # Check that the request was successful
-        self.assertEqual(result.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Get the user's topics from the database
         topics = Topic.objects.filter(user=self.user)
@@ -96,10 +96,10 @@ class PrivateTopicTagsApiTests(TestCase):
         # Get the topic details url
         url = topic_details_url(topic.id)
         # Update the topic details with the different tag payload
-        result = self.client.patch(url, payload, format='json')
+        response = self.client.patch(url, payload, format='json')
 
         # Check that the request was successful
-        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Check that the topic has one tag
         self.assertEqual(topic.tags.count(), 1)
 
@@ -130,10 +130,10 @@ class PrivateTopicTagsApiTests(TestCase):
         # Get the topic details url
         url = topic_details_url(topic.id)
         # Update the topic details with the different tag from the payload
-        result = self.client.patch(url, payload, format='json')
+        response = self.client.patch(url, payload, format='json')
 
         # Check that the request was successful
-        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Check that the topic has one tag
         self.assertEqual(topic.tags.count(), 1)
         # Check that the topic has the different tag
@@ -159,9 +159,9 @@ class PrivateTopicTagsApiTests(TestCase):
         # Get the topic details url
         url = topic_details_url(topic.id)
         # Update the topic details with the payload
-        result = self.client.patch(url, payload, format='json')
+        response = self.client.patch(url, payload, format='json')
 
         # Check that the request was successful
-        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Check that the topic has no tags
         self.assertEqual(topic.tags.count(), 0)

@@ -59,10 +59,10 @@ class PrivateTopicResourcesApiTests(TestCase):
             name='Test Resource'
         )
         # Post the payload with the same tag name as the existing tag
-        result = self.client.post(TOPICS_URL, self.payload, format='json')
+        response = self.client.post(TOPICS_URL, self.payload, format='json')
 
         # Check that the request was successful
-        self.assertEqual(result.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Get the user's topics from the database
         topics = Topic.objects.filter(user=self.user)
@@ -104,10 +104,10 @@ class PrivateTopicResourcesApiTests(TestCase):
         # Get the topic details url
         url = topic_details_url(topic.id)
         # Update the topic details with the different resource payload
-        result = self.client.patch(url, payload, format='json')
+        response = self.client.patch(url, payload, format='json')
 
         # Check that the request was successful
-        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Check that the topic has one resource
         self.assertEqual(topic.resources.count(), 1)
 
@@ -140,10 +140,10 @@ class PrivateTopicResourcesApiTests(TestCase):
         # Get the topic details url
         url = topic_details_url(topic.id)
         # Update the topic details with the different resource from the payload
-        result = self.client.patch(url, payload, format='json')
+        response = self.client.patch(url, payload, format='json')
 
         # Check that the request was successful
-        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Check that the topic has one resource
         self.assertEqual(topic.resources.count(), 1)
         # Check that the topic has the different resource
@@ -169,9 +169,9 @@ class PrivateTopicResourcesApiTests(TestCase):
         # Get the topic details url
         url = topic_details_url(topic.id)
         # Update the topic details with the payload
-        result = self.client.patch(url, payload, format='json')
+        response = self.client.patch(url, payload, format='json')
 
         # Check that the request was successful
-        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Check that the topic has no resources
         self.assertEqual(topic.resources.count(), 0)
