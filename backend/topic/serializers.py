@@ -204,6 +204,10 @@ class TopicSerializer(serializers.ModelSerializer):
         # Assign them to a resources variable
         # If no resources are passed in, set the resources variable to None
         resources = validated_data.pop('resources', None)
+        # Remove the questions from the validated data
+        # Assign them to a questions variable
+        # If no questions are passed in, set the questions variable to None
+        questions = validated_data.pop('questions', None)
 
         # If tags were passed in
         if tags is not None:
@@ -224,6 +228,16 @@ class TopicSerializer(serializers.ModelSerializer):
             # Call the _get_or_create_resources method to get
             # existing resources or create the resources
             self._get_or_create_resources(resources, instance)
+
+        # If questions were passed in
+        if questions is not None:
+
+            # Clear the existing questions
+            instance.questions.clear()
+
+            # Call the _get_or_create_questions method to get
+            # existing questions or create the questions
+            self._get_or_create_questions(questions, instance)
 
         # Update the topic fields
         for attr, value in validated_data.items():
