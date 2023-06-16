@@ -103,6 +103,10 @@ class Topic(models.Model):
     # A topic can have many resources.
     # A resource can have many topics.
     resources = models.ManyToManyField('Resource')
+    # Questions that can be allocated to topics.
+    # A topic can have many questions.
+    # A question can have many topics.
+    questions = models.ManyToManyField('Question')
 
     def __str__(self):
         """
@@ -168,6 +172,35 @@ class Resource(models.Model):
         """
         Return the name as a string representation
         of the resource object.
+        """
+
+        return self.name
+
+
+class Question(models.Model):
+    """
+    Model for the questions that can be allocated to topics.
+    Allows for topic filtering by questions.
+    Extends Django's standard Model.
+    """
+
+    # Name of the question (question itself)
+    name = models.CharField(max_length=255)
+    # Answer to the question
+    answer = models.CharField(max_length=255)
+    # User that the question belongs to.
+    # A user can have many questions.
+    # A question must have one user.
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        # When a user is deleted so are their questions
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        """
+        Return the name as a string representation
+        of the question object.
         """
 
         return self.name
