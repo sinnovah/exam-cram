@@ -8,7 +8,7 @@ from rest_framework import (
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Topic, Tag, Resource
+from core.models import Topic, Tag, Resource, Question
 from topic import serializers
 
 
@@ -106,3 +106,15 @@ class ResourceViewSet(BaseTopicAttrViewSet):
     serializer_class = serializers.ResourceSerializer
     # Set the queryset to all the resource objects
     queryset = Resource.objects.all()
+
+
+class QuestionViewSet(BaseTopicAttrViewSet):
+    """
+    Manage questions.
+    """
+    # Extends BaseTopicAttrViewSet.
+
+    # Set DRF's serializer class to the custom question serializer
+    serializer_class = serializers.QuestionSerializer
+    # Set the queryset to all the question objects
+    queryset = Question.objects.all()
