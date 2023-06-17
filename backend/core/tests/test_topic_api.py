@@ -10,6 +10,9 @@ from rest_framework import status
 from core.tests.helpers import (
     create_user,
     create_topic,
+    create_tag,
+    create_resource,
+    create_question,
     topic_details_url
 )
 from core.models import Topic
@@ -292,3 +295,126 @@ class PrivateTopicApiTests(TestCase):
         self.assertEqual(result.status_code, status.HTTP_404_NOT_FOUND)
         # Test that the topic was not deleted
         self.assertTrue(Topic.objects.filter(id=topic.id).exists())
+
+    def test_filter_topics_by_tags(self):
+        """
+        Test that topics can be filtered by tags.
+        """
+
+        # Create test topics for the user
+        topic1 = create_topic(user=self.user, title='Topic 1')
+        topic2 = create_topic(user=self.user, title='Topic 2')
+        # Create test tags for the user
+        tag1 = create_tag(user=self.user, name='Tag 1')
+        tag2 = create_tag(user=self.user, name='Tag 2')
+
+        # Add the tags to the topics
+        topic1.tags.add(tag1)
+        topic2.tags.add(tag2)
+
+        # Create another topic for the user
+        topic3 = create_topic(user=self.user, title='Topic 3')
+
+        # Comma separated parameters to filter the topics by tags
+        params = {'tags': f'{tag1.id},{tag2.id}'}
+
+        # Retrieve the topics filtered by tags
+        response = self.client.get(TOPICS_URL, params)
+
+        # Serialize the topics retrieved from the database
+        serialized1 = TopicSerializer(topic1)
+        serialized2 = TopicSerializer(topic2)
+        serialized3 = TopicSerializer(topic3)
+
+        # Test that the get topics request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test that the two topics with the params tags
+        # are in the response's filtered topics
+        self.assertIn(serialized1.data, response.data)
+        self.assertIn(serialized2.data, response.data)
+        # Test that the topic without the params tags
+        # is not in the response's filtered topics
+        self.assertNotIn(serialized3.data, response.data)
+
+    def test_filter_topics_by_resources(self):
+        """
+        Test that topics can be filtered by resources.
+        """
+
+        # Create test topics for the user
+        topic1 = create_topic(user=self.user, title='Topic 1')
+        topic2 = create_topic(user=self.user, title='Topic 2')
+        # Create test resources for the user
+        resource1 = create_resource(user=self.user, name='Resource 1')
+        resource2 = create_resource(user=self.user, name='Resource 2')
+
+        # Add the resources to the topics
+        topic1.resources.add(resource1)
+        topic2.resources.add(resource2)
+
+        # Create another topic for the user
+        topic3 = create_topic(user=self.user, title='Topic 3')
+
+        # Comma separated parameters to filter the topics by resources
+        params = {'resources': f'{resource1.id},{resource2.id}'}
+
+        # Retrieve the topics filtered by resources
+        response = self.client.get(TOPICS_URL, params)
+
+        # Serialize the topics retrieved from the database
+        serialized1 = TopicSerializer(topic1)
+        serialized2 = TopicSerializer(topic2)
+        serialized3 = TopicSerializer(topic3)
+
+        # Test that the get topics request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test that the two topics with the params resources
+        # are in the response's filtered topics
+        self.assertIn(serialized1.data, response.data)
+        self.assertIn(serialized2.data, response.data)
+        # Test that the topic without the params resources
+        # is not in the response's filtered topics
+        self.assertNotIn(serialized3.data, response.data)
+
+    def test_filter_topics_by_questions(self):
+        """
+        Test that topics can be filtered by questions.
+        """
+
+        # Create test topics for the user
+        topic1 = create_topic(user=self.user, title='Topic 1')
+        topic2 = create_topic(user=self.user, title='Topic 2')
+        # Create test questions for the user
+        question1 = create_question(user=self.user, name='Question 1')
+        question2 = create_question(user=self.user, name='Question 2')
+
+        # Add the questions to the topics
+        topic1.questions.add(question1)
+        topic2.questions.add(question2)
+
+        # Create another topic for the user
+        topic3 = create_topic(user=self.user, title='Topic 3')
+
+        # Comma separated parameters to filter the topics by questions
+        params = {'questions': f'{question1.id},{question2.id}'}
+
+        # Retrieve the topics filtered by questions
+        response = self.client.get(TOPICS_URL, params)
+
+        # Serialize the topics retrieved from the database
+        serialized1 = TopicSerializer(topic1)
+        serialized2 = TopicSerializer(topic2)
+        serialized3 = TopicSerializer(topic3)
+
+        # Test that the get topics request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test that the two topics with the params questions
+        # are in the response's filtered topics
+        self.assertIn(serialized1.data, response.data)
+        self.assertIn(serialized2.data, response.data)
+        # Test that the topic without the params questions
+        # is not in the response's filtered topics
+        self.assertNotIn(serialized3.data, response.data)
