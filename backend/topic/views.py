@@ -152,10 +152,27 @@ class BaseTopicAttrViewSet(
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
 
-        # Return the queryset filtered by the authenticated user
-        return self.queryset.filter(
-            user=self.request.user
+        # Get the assigned_only query string
+        # If assigned_only is 1, return only the assigned objects
+        # If assigned_only is 0, return all the objects
+        # bool converts 1 to True and 0 to False
+        assigned_only = bool(
+            int(self.request.query_params.get('assigned_only', 0))
         )
+
+        # Get the queryset
+        queryset = self.queryset
+
+        # If assigned_only is True
+        if assigned_only:
+            # Filter the queryset by objects that are assigned to topics
+            queryset = queryset.filter(topic__isnull=False)
+
+        # Return the queryset filtered by the authenticated user
+        # Distinct objects only
+        return queryset.filter(
+            user=self.request.user
+        ).distinct()
 
 
 class TagViewSet(BaseTopicAttrViewSet):
