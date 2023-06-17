@@ -12,6 +12,7 @@ from topic.serializers import QuestionSerializer
 from core.models import Question
 from core.tests.helpers import (
     create_user,
+    create_topic,
     create_question,
     question_details_url
 )
@@ -158,3 +159,66 @@ class PrivateQuestionApiTests(TestCase):
 
         # Test that the question was deleted successfully
         self.assertFalse(questions.exists())
+
+    def test_filter_questions_by_those_assigned_to_topics(self):
+        """
+        Test filtering questions list by those assigned to topics.
+        """
+
+        # Create questions for the user
+        question1 = create_question(user=self.user, name='Question 1')
+        question2 = create_question(user=self.user, name='Question 2')
+        # Create a topic for the user
+        topic = create_topic(user=self.user)
+        # Assign question1 to the topic
+        topic.questions.add(question1)
+
+        # Retrieve the questions assigned to topics
+        # URL for the questions list,
+        # passing in assigned_only query param
+        response = self.client.get(QUESTIONS_URL, {'assigned_only': 1})
+
+        # Serialize the questions from the database
+        serializer1 = QuestionSerializer(question1)
+        serializer2 = QuestionSerializer(question2)
+
+        # Test that the request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that there is 1 question in the response
+        self.assertEqual(len(response.data), 1)
+        # Test that question1 is in the response data
+        self.assertIn(serializer1.data, response.data)
+        # Test that question2 is not in the response data
+        self.assertNotIn(serializer2.data, response.data)
+
+    def test_filter_questions_by_those_assigned_unique(self):
+        """
+        Test filtering questions list by those assigned to
+        topics returns unique items.
+        """
+
+        # Create a question for the user
+        question1 = create_question(user=self.user, name='Question 1')
+        # Create another question for the user
+        question2 = create_question(user=self.user, name='Question 2')
+        # Create a topic for the user
+        topic1 = create_topic(user=self.user, title='Title 1')
+        # Create another topic for the user
+        topic2 = create_topic(user=self.user, title='Title 2')
+
+        # Assign question1 to both topics
+        topic1.questions.add(question1)
+        topic2.questions.add(question1)
+
+        # Retrieve the questions assigned to topics
+        # URL for the questions list, passing in assigned_only query param
+        response = self.client.get(QUESTIONS_URL, {'assigned_only': 1})
+
+        # Test that the request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that there is 1 question in the response
+        self.assertEqual(len(response.data), 1)
+        # Test that question1 is in the response data
+        self.assertEqual(response.data[0]['name'], question1.name)
+        # Test that question2 is not in the response data
+        self.assertNotEqual(response.data[0]['name'], question2.name)
