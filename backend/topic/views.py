@@ -133,6 +133,20 @@ class TopicViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
+# Extend the schema for the BaseTopicAttrViewSet
+# https://drf-spectacular.readthedocs.io/en/latest/customization.html#extend-schema
+# adds additional OpenAPI documentation to the viewset
+@extend_schema_view(
+    list=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                'assigned_only',
+                OpenApiTypes.INT, enum=[0, 1],
+                description='Filter by items assigned to topics'
+            )
+        ]
+    )
+)
 class BaseTopicAttrViewSet(
         mixins.DestroyModelMixin,
         mixins.UpdateModelMixin,
