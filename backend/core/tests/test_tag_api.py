@@ -12,6 +12,7 @@ from topic.serializers import TagSerializer
 from core.models import Tag
 from core.tests.helpers import (
     create_user,
+    create_topic,
     create_tag,
     tag_details_url
 )
@@ -162,3 +163,66 @@ class PrivateTopicApiTests(TestCase):
 
         # Test that the tag has been deleted (does not exist)
         self.assertFalse(tags.exists())
+
+    def test_filter_tags_by_those_assigned_to_topics(self):
+        """
+        Test filtering tags list by those assigned to topics.
+        """
+
+        # Create tags for the user
+        tag1 = create_tag(user=self.user, name='Tag 1')
+        tag2 = create_tag(user=self.user, name='Tag 2')
+        # Create a test topic for the user
+        topic = create_topic(user=self.user)
+        # Assign tag1 to the topic
+        topic.tags.add(tag1)
+
+        # Retrieve tags assigned to topics
+        # URL for the tags list, passing in the assigned_only query param
+        response = self.client.get(TAGS_URL, {'assigned_only': 1})
+
+        # Serialize the tags retrieved from the database
+        serializer1 = TagSerializer(tag1)
+        serializer2 = TagSerializer(tag2)
+
+        # Test that the get tags request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that there is 1 tag in the response
+        self.assertEqual(len(response.data), 1)
+        # Test that tag1 is in the response data
+        self.assertIn(serializer1.data, response.data)
+        # Test that tag2 is not in the response data
+        self.assertNotIn(serializer2.data, response.data)
+
+    def test_filter_tags_by_those_assigned_unique(self):
+        """
+        Test filtering tags list by those assigned to
+        topics returns unique items.
+        """
+
+        # Create a tag for the user
+        tag1 = create_tag(user=self.user, name='Tag 1')
+        # Create a second tag for the user
+        tag2 = create_tag(user=self.user, name='Tag 2')
+        # Create a test topic for the user
+        topic1 = create_topic(user=self.user, title="Title 1")
+        # Create a second test topic for the user
+        topic2 = create_topic(user=self.user, title="Title 2")
+
+        # Assign tag1 to topic1
+        topic1.tags.add(tag1)
+        # Assign tag1 to topic2
+        topic2.tags.add(tag1)
+
+        # Retrieve tags assigned to topics
+        # URL for the tags list, passing in the assigned_only query param
+        response = self.client.get(TAGS_URL, {'assigned_only': 1})
+
+        # Test that the get tags request was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Test that there is only 1 tag (tag1) in the response
+        self.assertEqual(len(response.data), 1)
+        # Test that tag1 is in the response data
+        self.assertEqual(response.data[0]['name'], tag1.name)
+        # Test that tag2 is not in the response data
+        self.assertNotEqual(response.data[0]['name'], tag2.name)
