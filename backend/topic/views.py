@@ -27,14 +27,57 @@ class TopicViewSet(viewsets.ModelViewSet):
     # Must be authenticated to use the viewset
     permission_classes = [IsAuthenticated]
 
+    def _params_to_ints(self, query_string):
+        """
+        Convert a list of string IDs to a list of integers.
+        """
+
+        # Split the query string by commas
+        string_ids = query_string.split(',')
+        # Return the list of string IDs converted to integers
+        return [int(str_id) for str_id in string_ids]
+
     def get_queryset(self):
         """
         Retrieve only the topics for the authenticated user
         """
 
-        # Return the topics for the authenticated user
-        # Ordered by most recently created
-        return self.queryset.filter(user=self.request.user).order_by('-id')
+        # Get the tags query string
+        tags = self.request.query_params.get('tags')
+        # Get the resources query string
+        resources = self.request.query_params.get('resources')
+        # Get the questions query string
+        questions = self.request.query_params.get('questions')
+
+        # Get the queryset
+        queryset = self.queryset
+
+        # If the tags query string is provided
+        if tags:
+            # Convert the tags query string to a list of integers
+            tag_ids = self._params_to_ints(tags)
+            # Filter the queryset by the tag IDs
+            queryset = queryset.filter(tags__id__in=tag_ids)
+
+        # If the resources query string is provided
+        if resources:
+            # Convert the resources query string to a list of integers
+            resource_ids = self._params_to_ints(resources)
+            # Filter the queryset by the resource IDs
+            queryset = queryset.filter(resources__id__in=resource_ids)
+
+        # If the questions query string is provided
+        if questions:
+            # Convert the questions query string to a list of integers
+            question_ids = self._params_to_ints(questions)
+            # Filter the queryset by the question IDs
+            queryset = queryset.filter(questions__id__in=question_ids)
+
+        # Return the topics (with any filtering applied) for the authenticated
+        # user, ordered by most recently created, distinct topics only
+        return queryset.filter(
+                user=self.request.user
+            ).order_by('-id').distinct()
 
     def get_serializer_class(self):
         """
