@@ -1,6 +1,13 @@
 """
 Topic API views.
 """
+from drf_spectacular.utils import (
+    extend_schema_view,
+    extend_schema,
+    OpenApiParameter,
+    OpenApiTypes
+)
+
 from rest_framework import (
     viewsets,
     mixins
@@ -12,6 +19,30 @@ from core.models import Topic, Tag, Resource, Question
 from topic import serializers
 
 
+# Extend the schema for the TopicViewSet
+# https://drf-spectacular.readthedocs.io/en/latest/customization.html#extend-schema
+# adds additional OpenAPI documentation to the viewset
+@extend_schema_view(
+    list=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                'tags',
+                OpenApiTypes.STR,
+                description='Comma separated list of Tag ids to filter'
+            ),
+            OpenApiParameter(
+                'resources',
+                OpenApiTypes.STR,
+                description='Comma separated list of Resource ids to filter'
+            ),
+            OpenApiParameter(
+                'questions',
+                OpenApiTypes.STR,
+                description='Comma separated list of Question ids to filter'
+            )
+        ]
+    )
+)
 class TopicViewSet(viewsets.ModelViewSet):
     """
     Manage topics.
