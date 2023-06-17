@@ -170,7 +170,7 @@ class PrivateResourceApiTests(TestCase):
         resource1 = create_resource(user=self.user, name='Resource 1')
         resource2 = create_resource(user=self.user, name='Resource 2')
         # Create a test topic for the user
-        topic = create_topic(user=self.user, name='Test Topic')
+        topic = create_topic(user=self.user, title='Test Topic')
         # Assign resource1 to the topic
         topic.resources.add(resource1)
 
@@ -201,9 +201,9 @@ class PrivateResourceApiTests(TestCase):
         resource1 = create_resource(user=self.user, name='Resource 1')
         resource2 = create_resource(user=self.user, name='Resource 2')
         # Create a test topic for the user
-        topic1 = create_topic(user=self.user, name='Test Topic 1')
+        topic1 = create_topic(user=self.user, title='Test Topic 1')
         # Create a second test topic for the user
-        topic2 = create_topic(user=self.user, name='Test Topic 2')
+        topic2 = create_topic(user=self.user, title='Test Topic 2')
 
         # Assign resource1 to both topics
         topic1.resources.add(resource1)
